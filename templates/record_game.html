@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Record Game Stats - Hockey Stats{% endblock %}
+
+{% block content %}
+<h2 style="color: #2d3748; margin-bottom: 20px;">Record Game Statistics</h2>
+
+<div id="alert-container"></div>
+
+<form id="game-stats-form">
+    <div class="form-group">
+        <label for="game-date">Game Date & Time:</label>
+        <input type="datetime-local" id="game-date" name="game_date" required>
+    </div>
+
+    <h3 style="color: #4a5568; margin: 30px 0 20px;">Player Statistics</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Player</th>
+                <th style="text-align: center;">Plus/Minus (+/-)</th>
+                <th style="text-align: center;">Shots Taken</th>
+                <th style="text-align: center;">Blocked Shots</th>
+                <th style="text-align: center;">Takeaways</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for player in players %}
+            <tr>
+                <td>
+                    <span class="player-number">#{{ player.number }}</span>
+                    <strong>{{ player.name }}</strong>
+                    <input type="hidden" id="player_id_{{ loop.index0 }}" value="{{ player.id }}">
+                </td>
+                <td>
+                    <div class="stat-input-group">
+                        <button type="button" class="stat-btn stat-btn-minus" onclick="updateStat({{ loop.index0 }}, 'plus_minus', -1)">−</button>
+                        <div class="stat-display" id="plus_minus_{{ loop.index0 }}">0</div>
+                        <button type="button" class="stat-btn stat-btn-plus" onclick="updateStat({{ loop.index0 }}, 'plus_minus', 1)">+</button>
+                    </div>
+                </td>
+                <td>
+                    <div class="stat-input-group">
+                        <div class="stat-display" id="shots_taken_{{ loop.index0 }}">0</div>
+                        <button type="button" class="stat-btn stat-btn-plus" onclick="updateStat({{ loop.index0 }}, 'shots_taken', 1)">+</button>
+                    </div>
+                </td>
+                <td>
+                    <div class="stat-input-group">
+                        <div class="stat-display" id="blocked_shots_{{ loop.index0 }}">0</div>
+                        <button type="button" class="stat-btn stat-btn-plus" onclick="updateStat({{ loop.index0 }}, 'blocked_shots', 1)">+</button>
+                    </div>
+                </td>
+                <td>
+                    <div class="stat-input-group">
+                        <div class="stat-display" id="takeaways_{{ loop.index0 }}">0</div>
+                        <button type="button" class="stat-btn stat-btn-plus" onclick="updateStat({{ loop.index0 }}, 'takeaways', 1)">+</button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="margin-top: 30px; text-align: center;">
+        <button type="button" class="btn" style="margin-right: 10px; background: #718096;" onclick="resetAllStats()">Reset All</button>
+        <button type="submit" class="btn btn-success" style="font-size: 18px; padding: 15px 40px;">Save Game Stats</button>
+    </div>
+</form>
+
+<script>
+// Store stats in memory
+const playerStats = {};
+const playerCount = {{ players|length }};
+
+// Initialize stats for each player
+for (let i = 0; i < playerCount; i++) {
+    playerStats[i] = {
+        plus_minus: 0,
+        blocked_shots: 0,
+        takeaways: 0,
+        shots_taken: 0
+    };
+}
+
+function updateStat(playerIndex, statType, increment) {
+    // Update the value
+    playerStats[playerIndex][statType] += increment;
+
+    // Prevent negative values for shots, blocked shots, and takeaways
+    if (statType !== 'plus_minus' && playerStats[playerIndex][statType] < 0) {
+        playerStats[playerIndex][statType] = 0;
+    }
+
+    // Update display
+    const display = document.getElementById(`${statType}_${playerIndex}`);
+    const value = playerStats[playerIndex][statType];
+
+    // Update text
+    if (statType === 'plus_minus' && value > 0) {
+        display.textContent = `+${value}`;
+    } else {
+        display.textContent = value;
+    }
+
+    // Update color for plus/minus
+    if (statType === 'plus_minus') {
+        display.classList.remove('positive', 'negative');
+        if (value > 0) {
+            display.classList.add('positive');
+        } else if (value < 0) {
+            display.classList.add('negative');
+        }
+    }
+}
+
+function resetAllStats() {
+    if (!confirm('Are you sure you want to reset all stats for this game?')) {
+        return;
+    }
+
+    for (let i = 0; i < playerCount; i++) {
+        playerStats[i] = {
+            plus_minus: 0,
+            blocked_shots: 0,
+            takeaways: 0,
+            shots_taken: 0
+        };
+
+        // Update all displays
+        document.getElementById(`plus_minus_${i}`).textContent = '0';
+        document.getElementById(`plus_minus_${i}`).classList.remove('positive', 'negative');
+        document.getElementById(`blocked_shots_${i}`).textContent = '0';
+        document.getElementById(`takeaways_${i}`).textContent = '0';
+        document.getElementById(`shots_taken_${i}`).textContent = '0';
+    }
+}
+
+document.getElementById('game-stats-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const gameDate = document.getElementById('game-date').value;
+
+    const players = [];
+    for (let i = 0; i < playerCount; i++) {
+        players.push({
+            player_id: parseInt(document.getElementById(`player_id_${i}`).value),
+            plus_minus: playerStats[i].plus_minus,
+            blocked_shots: playerStats[i].blocked_shots,
+            takeaways: playerStats[i].takeaways,
+            shots_taken: playerStats[i].shots_taken
+        });
+    }
+
+    try {
+        const response = await fetch('/save_game_stats', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                game_date: gameDate,
+                players: players
+            })
+        });
+
+        const result = await response.json();
+        const alertContainer = document.getElementById('alert-container');
+
+        if (result.success) {
+            alertContainer.innerHTML = `
+                <div class="alert alert-success">
+                    ${result.message}
+                    <a href="/" style="margin-left: 10px;">View Dashboard</a>
+                </div>
+            `;
+            // Reset all stats
+            resetAllStats();
+            // Set current date/time
+            document.getElementById('game-date').value = new Date().toISOString().slice(0, 16);
+        } else {
+            alertContainer.innerHTML = `
+                <div class="alert alert-error">
+                    Error: ${result.message}
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('alert-container').innerHTML = `
+            <div class="alert alert-error">
+                An error occurred while saving the stats.
+            </div>
+        `;
+    }
+});
+
+// Set default date to now
+document.getElementById('game-date').value = new Date().toISOString().slice(0, 16);
+
+// Add keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+    // Press 'r' to reset all stats
+    if (e.key === 'r' && !e.target.matches('input')) {
+        resetAllStats();
+    }
+});
+</script>
+{% endblock %}

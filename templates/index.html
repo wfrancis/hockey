@@ -1,118 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hockey Defensive Stats Tracker</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>🏒 Hockey Defensive Stats Tracker</h1>
-            <div class="controls">
-                <button id="resetBtn" class="btn btn-danger">Reset All Stats</button>
-                <button id="exportBtn" class="btn btn-success">Export Summary</button>
-            </div>
-            <p class="usage-hint">Tip: Tap a stat cell to add 1. Long-press to subtract. Use Undo if you make a mistake.</p>
-        </header>
+{% extends "base.html" %}
 
-        <!-- Desktop Header Row (hidden on mobile) -->
-        <div class="stats-grid">
-            <div class="header-row desktop-only">
-                <div class="cell player-header">Player</div>
-                <div class="cell stat-header" data-stat="plus_minus" title="Plus/Minus">Plus/Minus</div>
-                <div class="cell stat-header" data-stat="blocked_shots" title="Blocked Shots">Blocked Shots</div>
-                <div class="cell stat-header" data-stat="takeaways" title="Takeaways">Takeaways</div>
-            </div>
+{% block title %}Team Dashboard - Hockey Stats{% endblock %}
 
-            <!-- Player Rows -->
-            {% for player_num, player_name in players.items() %}
-            <div class="player-row" data-player="{{ player_num }}">
-                <!-- Player Name -->
-                <div class="cell player-name">
-                    <div class="player-info">
-                        <span class="player-number">#{{ player_num }}</span>
-                        <span class="player-title">{{ player_name }}</span>
-                    </div>
-                </div>
+{% block content %}
+<h2 style="color: #2d3748; margin-bottom: 20px;">Team Statistics Overview</h2>
 
-                <!-- Plus/Minus -->
-                <div class="cell stat-cell" data-label="Plus/Minus" data-stat="plus_minus" title="Tap to add 1 • Long-press to subtract">
-                    <div class="stat-group">
-                        <div class="stat-label mobile-only">Plus/Minus</div>
-                        <div class="stat-controls">
-                            <button class="btn btn-small btn-minus" onclick="modifyStat({{ player_num }}, 'plus_minus', -1)" title="Decrease Plus/Minus">+/-</button>
-                            <span class="stat-value" id="plus_minus_{{ player_num }}">{{ stats[player_num|string]['plus_minus'] }}</span>
-                            <button class="btn btn-small btn-plus" onclick="modifyStat({{ player_num }}, 'plus_minus', 1)" title="Increase Plus/Minus">+/-</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Blocked Shots -->
-                <div class="cell stat-cell" data-label="Blocked Shots" data-stat="blocked_shots" title="Tap to add 1 • Long-press to subtract">
-                    <div class="stat-group">
-                        <div class="stat-label mobile-only">Blocked Shots</div>
-                        <div class="stat-controls">
-                            <button class="btn btn-small btn-minus" onclick="modifyStat({{ player_num }}, 'blocked_shots', -1)" title="Decrease Blocked Shots">+/-</button>
-                            <span class="stat-value" id="blocked_shots_{{ player_num }}">{{ stats[player_num|string]['blocked_shots'] }}</span>
-                            <button class="btn btn-small btn-plus" onclick="modifyStat({{ player_num }}, 'blocked_shots', 1)" title="Increase Blocked Shots">+/-</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Takeaways -->
-                <div class="cell stat-cell" data-label="Takeaways" data-stat="takeaways" title="Tap to add 1 • Long-press to subtract">
-                    <div class="stat-group">
-                        <div class="stat-label mobile-only">Takeaways</div>
-                        <div class="stat-controls">
-                            <button class="btn btn-small btn-minus" onclick="modifyStat({{ player_num }}, 'takeaways', -1)" title="Decrease Takeaways">+/-</button>
-                            <span class="stat-value" id="takeaways_{{ player_num }}">{{ stats[player_num|string]['takeaways'] }}</span>
-                            <button class="btn btn-small btn-plus" onclick="modifyStat({{ player_num }}, 'takeaways', 1)" title="Increase Takeaways">+/-</button>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-            {% endfor %}
-        </div>
-
-        <!-- Team Totals Section -->
-        <div class="totals-section">
-            <h3>📊 Team Totals</h3>
-            <div class="totals-grid">
-                <div class="total-item">
-                    <div class="total-icon">⚖️</div>
-                    <div class="total-info">
-                        <span class="total-label">Plus/Minus</span>
-                        <span class="total-value" id="total-plus-minus">0</span>
-                    </div>
-                </div>
-                <div class="total-item">
-                    <div class="total-icon">🛡️</div>
-                    <div class="total-info">
-                        <span class="total-label">Blocked Shots</span>
-                        <span class="total-value" id="total-blocked">0</span>
-                    </div>
-                </div>
-                <div class="total-item">
-                    <div class="total-icon">⚡</div>
-                    <div class="total-info">
-                        <span class="total-label">Takeaways</span>
-                        <span class="total-value" id="total-takeaways">0</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Status indicator -->
-        <div class="status-indicator" id="statusIndicator">
-            <span class="status-dot"></span>
-            <span class="status-text">Ready</span>
-            <button id="undoBtn" class="btn btn-small btn-undo" style="display:none;">Undo</button>
-        </div>
-    </div>
-
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
-</body>
-</html>
+<table>
+    <thead>
+        <tr>
+            <th>Number</th>
+            <th>Player</th>
+            <th>Games Played</th>
+            <th>Plus/Minus (+/-)</th>
+            <th>Shots Taken</th>
+            <th>Blocked Shots</th>
+            <th>Takeaways</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for player in players %}
+        <tr>
+            <td><span class="player-number">#{{ player.number }}</span></td>
+            <td><strong>{{ player.name }}</strong></td>
+            <td>{{ player.stats.games_played }}</td>
+            <td class="{% if player.stats.plus_minus > 0 %}stat-positive{% elif player.stats.plus_minus < 0 %}stat-negative{% else %}stat-neutral{% endif %}">
+                {% if player.stats.plus_minus > 0 %}+{% endif %}{{ player.stats.plus_minus }}
+            </td>
+            <td class="stat-neutral">{{ player.stats.shots_taken }}</td>
+            <td class="stat-neutral">{{ player.stats.blocked_shots }}</td>
+            <td class="stat-neutral">{{ player.stats.takeaways }}</td>
+            <td>
+                <a href="{{ url_for('player_detail', player_id=player.id) }}" class="btn" style="padding: 8px 16px; font-size: 14px;">View Details</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

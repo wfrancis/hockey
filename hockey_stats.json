@@ -1,0 +1,103 @@
+{
+  "timestamp": "2025-09-25T13:22:53.198833",
+  "players": {
+    "4": "Ryder",
+    "5": "Sebastian",
+    "6": "Hudson",
+    "11": "Juna",
+    "12": "Bowen",
+    "13": "Cole",
+    "14": "Leo",
+    "16": "Shea",
+    "20": "Pierre",
+    "29": "Matthew",
+    "35": "Carter",
+    "37": "Slade",
+    "38": "Andrew",
+    "39": "Ryland",
+    "41": "Asher",
+    "44": "Brooks"
+  },
+  "stats": {
+    "4": {
+      "plus_minus": 0,
+      "blocked_shots": 0,
+      "takeaways": 1
+    },
+    "5": {
+      "plus_minus": 0,
+      "blocked_shots": 0,
+      "takeaways": 0
+    },
+    "6": {
+      "plus_minus": 0,
+      "blocked_shots": 0,
+      "takeaways": 0
+    },
+    "11": {
+      "plus_minus": 0,
+      "blocked_shots": 0,
+      "takeaways": 0
+    },
+    "12": {
+      "plus_minus": 0,
+      "blocked_shots": 0,
+      "takeaways": 0
+    },
+    "13": {
+      "plus_minus": 0,
+      "blocked_shots": 0,
+      "takeaways": 0
+    },
+    "14": {
+      "plus_minus": 0,
+      "blocked_shots": 0,
+      "takeaways": 0
+    },
+    "16": {
+      "plus_minus": 0,
+      "blocked_shots": 0,
+      "takeaways": 0
+    },
+    "20": {
+      "plus_minus": 0,
+      "blocked_shots": 0,
+      "takeaways": 0
+    },
+    "29": {
+      "plus_minus": 0,
+      "blocked_shots": 0,
+      "takeaways": 0
+    },
+    "35": {
+      "plus_minus": 0,
+      "blocked_shots": 0,
+      "takeaways": 0
+    },
+    "37": {
+      "plus_minus": 0,
+      "blocked_shots": 0,
+      "takeaways": 0
+    },
+    "38": {
+      "plus_minus": 0,
+      "blocked_shots": 0,
+      "takeaways": 0
+    },
+    "39": {
+      "plus_minus": 0,
+      "blocked_shots": 0,
+      "takeaways": 0
+    },
+    "41": {
+      "plus_minus": 0,
+      "blocked_shots": 0,
+      "takeaways": 0
+    },
+    "44": {
+      "plus_minus": 0,
+      "blocked_shots": 0,
+      "takeaways": 0
+    }
+  }
+}

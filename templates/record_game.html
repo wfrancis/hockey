@@ -2,6 +2,21 @@
 
 {% block title %}Record Game Stats - Hockey Stats{% endblock %}
 
+{% block extra_style %}
+<style>
+  .stat-toggles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 10px 0 5px;
+    color: #4a5568;
+    font-weight: 600;
+  }
+  .stat-toggles label { display: inline-flex; align-items: center; gap: 6px; }
+  .stat-disabled { opacity: 0.5; pointer-events: none; }
+</style>
+{% endblock %}
+
 {% block content %}
 <h2 style="color: #2d3748; margin-bottom: 20px;">Record Game Statistics</h2>
 
@@ -12,8 +27,18 @@
         <label for="game-date">Game Date & Time:</label>
         <input type="datetime-local" id="game-date" name="game_date" required>
     </div>
+    <div class="form-group">
+        <label for="game-name">Game Name (optional):</label>
+        <input type="text" id="game-name" name="game_name" placeholder="e.g., vs Sharks (League), Scrimmage, Practice">
+    </div>
 
     <h3 style="color: #4a5568; margin: 30px 0 20px;">Player Statistics</h3>
+    <div class="stat-toggles" aria-label="Enable/disable stats for this game">
+        <label><input type="checkbox" id="na_plus_minus"> N/A +/-</label>
+        <label><input type="checkbox" id="na_shots_taken"> N/A Shots</label>
+        <label><input type="checkbox" id="na_blocked_shots"> N/A Blocks</label>
+        <label><input type="checkbox" id="na_takeaways"> N/A Takeaways</label>
+    </div>
 
     <table>
         <thead>
@@ -63,6 +88,9 @@
         </tbody>
     </table>
 
+    <div id="players-summary" style="margin-top: 16px; white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: 14px; color: #4a5568;"></div>
+    <div id="autosave-status" style="margin-top: 8px; font-size: 12px; color: #718096;">Autosave ready</div>
+
     <div style="margin-top: 30px; text-align: center;">
         <button type="button" class="btn" style="margin-right: 10px; background: #718096;" onclick="resetAllStats()">Reset All</button>
         <button type="submit" class="btn btn-success" style="font-size: 18px; padding: 15px 40px;">Save Game Stats</button>
@@ -73,6 +101,71 @@
 // Store stats in memory
 const playerStats = {};
 const playerCount = {{ players|length }};
+const playerMeta = [
+    {% for player in players %}
+    { number: {{ player.number }}, name: {{ player.name|tojson }} }{% if not loop.last %}, {% endif %}
+    {% endfor %}
+];
+
+// Autosave state
+let autosaveTimer = null;
+const AUTOSAVE_DELAY = 500; // ms
+const autosaveStatusEl = document.getElementById('autosave-status');
+function setAutosaveStatus(text, ok = true) {
+    if (!autosaveStatusEl) return;
+    autosaveStatusEl.textContent = text;
+    autosaveStatusEl.style.color = ok ? '#718096' : '#e53e3e';
+}
+
+function buildPayload(isAutosave = false) {
+    const gameDate = document.getElementById('game-date').value;
+    const gameName = (document.getElementById('game-name').value || '').trim();
+    const na = {
+        plus_minus: document.getElementById('na_plus_minus')?.checked || false,
+        shots_taken: document.getElementById('na_shots_taken')?.checked || false,
+        blocked_shots: document.getElementById('na_blocked_shots')?.checked || false,
+        takeaways: document.getElementById('na_takeaways')?.checked || false,
+    };
+
+    const players = [];
+    for (let i = 0; i < playerCount; i++) {
+        players.push({
+            player_id: parseInt(document.getElementById(`player_id_${i}`).value),
+            plus_minus: na.plus_minus ? 0 : playerStats[i].plus_minus,
+            blocked_shots: na.blocked_shots ? 0 : playerStats[i].blocked_shots,
+            takeaways: na.takeaways ? 0 : playerStats[i].takeaways,
+            shots_taken: na.shots_taken ? 0 : playerStats[i].shots_taken
+        });
+    }
+    return { game_date: gameDate, game_name: gameName, players, autosave: isAutosave };
+}
+
+function autosaveSchedule() {
+    if (autosaveTimer) clearTimeout(autosaveTimer);
+    setAutosaveStatus('Saving...');
+    autosaveTimer = setTimeout(autosaveNow, AUTOSAVE_DELAY);
+}
+
+async function autosaveNow() {
+    try {
+        const payload = buildPayload(true);
+        const response = await fetch('/save_game_stats', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        if (result.success) {
+            const ts = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            setAutosaveStatus(`Saved ${ts}`);
+        } else {
+            setAutosaveStatus(`Autosave failed: ${result.message}`, false);
+        }
+    } catch (err) {
+        setAutosaveStatus('Autosave error', false);
+        console.error('Autosave error:', err);
+    }
+}
 
 // Initialize stats for each player
 for (let i = 0; i < playerCount; i++) {
@@ -83,6 +176,10 @@ for (let i = 0; i < playerCount; i++) {
         shots_taken: 0
     };
 }
+
+// Initialize totals and summary on load
+updateTotals();
+renderPlayersSummary();
 
 function updateStat(playerIndex, statType, increment) {
     // Update the value
@@ -113,6 +210,50 @@ function updateStat(playerIndex, statType, increment) {
             display.classList.add('negative');
         }
     }
+
+    // Update totals and summary after any change
+    updateTotals();
+    renderPlayersSummary();
+    autosaveSchedule();
+}
+
+// Compute and render a plain-text summary for each player
+function renderPlayersSummary() {
+    const lines = [];
+    for (let i = 0; i < playerCount; i++) {
+        const meta = playerMeta[i];
+        const s = playerStats[i];
+        const pmText = s.plus_minus > 0 ? `+${s.plus_minus}` : `${s.plus_minus}`;
+        lines.push(`#${meta.number} ${meta.name}: +/- ${pmText}, Shots ${s.shots_taken}, Blocks ${s.blocked_shots}, Takeaways ${s.takeaways}`);
+    }
+    const container = document.getElementById('players-summary');
+    if (container) container.textContent = lines.join('\n');
+}
+
+// Compute and render totals across all players
+function updateTotals() {
+    const totals = { plus_minus: 0, shots_taken: 0, blocked_shots: 0, takeaways: 0 };
+    for (let i = 0; i < playerCount; i++) {
+        totals.plus_minus += playerStats[i].plus_minus;
+        totals.shots_taken += playerStats[i].shots_taken;
+        totals.blocked_shots += playerStats[i].blocked_shots;
+        totals.takeaways += playerStats[i].takeaways;
+    }
+
+    const pmDisplay = document.getElementById('total_plus_minus');
+    const shotsDisplay = document.getElementById('total_shots_taken');
+    const blockedDisplay = document.getElementById('total_blocked_shots');
+    const takeawaysDisplay = document.getElementById('total_takeaways');
+
+    if (pmDisplay) {
+        pmDisplay.textContent = totals.plus_minus > 0 ? `+${totals.plus_minus}` : `${totals.plus_minus}`;
+        pmDisplay.classList.remove('positive', 'negative');
+        if (totals.plus_minus > 0) pmDisplay.classList.add('positive');
+        else if (totals.plus_minus < 0) pmDisplay.classList.add('negative');
+    }
+    if (shotsDisplay) shotsDisplay.textContent = totals.shots_taken;
+    if (blockedDisplay) blockedDisplay.textContent = totals.blocked_shots;
+    if (takeawaysDisplay) takeawaysDisplay.textContent = totals.takeaways;
 }
 
 function resetAllStats() {
@@ -135,21 +276,62 @@ function resetAllStats() {
         document.getElementById(`takeaways_${i}`).textContent = '0';
         document.getElementById(`shots_taken_${i}`).textContent = '0';
     }
+
+    // Reset totals and summary as well
+    updateTotals();
+    renderPlayersSummary();
+    autosaveSchedule();
 }
+
+// Enable/disable stat columns globally via N/A checkboxes
+function disableStatColumn(statType, isNA) {
+    for (let i = 0; i < playerCount; i++) {
+        const display = document.getElementById(`${statType}_${i}`);
+        if (!display) continue;
+        const group = display.parentElement; // .stat-input-group
+        const buttons = group.querySelectorAll('button.stat-btn');
+        if (isNA) {
+            group.classList.add('stat-disabled');
+        } else {
+            group.classList.remove('stat-disabled');
+        }
+        buttons.forEach(btn => btn.disabled = isNA);
+    }
+}
+
+['plus_minus','shots_taken','blocked_shots','takeaways'].forEach(stat => {
+    const cb = document.getElementById(`na_${stat}`);
+    if (cb) cb.addEventListener('change', (e) => { 
+        disableStatColumn(stat, e.target.checked); 
+        autosaveSchedule();
+    });
+});
+
+// Autosave when game date changes
+document.getElementById('game-date').addEventListener('change', autosaveSchedule);
+document.getElementById('game-name').addEventListener('input', autosaveSchedule);
 
 document.getElementById('game-stats-form').addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const gameDate = document.getElementById('game-date').value;
 
+    // Respect N/A toggles by zeroing those stats for all players on submit
+    const na = {
+        plus_minus: document.getElementById('na_plus_minus')?.checked || false,
+        shots_taken: document.getElementById('na_shots_taken')?.checked || false,
+        blocked_shots: document.getElementById('na_blocked_shots')?.checked || false,
+        takeaways: document.getElementById('na_takeaways')?.checked || false,
+    };
+
     const players = [];
     for (let i = 0; i < playerCount; i++) {
         players.push({
             player_id: parseInt(document.getElementById(`player_id_${i}`).value),
-            plus_minus: playerStats[i].plus_minus,
-            blocked_shots: playerStats[i].blocked_shots,
-            takeaways: playerStats[i].takeaways,
-            shots_taken: playerStats[i].shots_taken
+            plus_minus: na.plus_minus ? 0 : playerStats[i].plus_minus,
+            blocked_shots: na.blocked_shots ? 0 : playerStats[i].blocked_shots,
+            takeaways: na.takeaways ? 0 : playerStats[i].takeaways,
+            shots_taken: na.shots_taken ? 0 : playerStats[i].shots_taken
         });
     }
 
@@ -161,6 +343,7 @@ document.getElementById('game-stats-form').addEventListener('submit', async (e) 
             },
             body: JSON.stringify({
                 game_date: gameDate,
+                game_name: (document.getElementById('game-name').value || '').trim(),
                 players: players
             })
         });
@@ -175,10 +358,7 @@ document.getElementById('game-stats-form').addEventListener('submit', async (e) 
                     <a href="/" style="margin-left: 10px;">View Dashboard</a>
                 </div>
             `;
-            // Reset all stats
-            resetAllStats();
-            // Set current date/time
-            document.getElementById('game-date').value = new Date().toISOString().slice(0, 16);
+            // Do not auto-reset stats here to avoid confirmation popup; user can use the Reset All button if desired.
         } else {
             alertContainer.innerHTML = `
                 <div class="alert alert-error">
@@ -196,8 +376,15 @@ document.getElementById('game-stats-form').addEventListener('submit', async (e) 
     }
 });
 
-// Set default date to now
+// Prefill date and name from server-provided values if present; otherwise default date to now
+{% if initial_game_date %}
+document.getElementById('game-date').value = {{ initial_game_date|tojson }};
+{% else %}
 document.getElementById('game-date').value = new Date().toISOString().slice(0, 16);
+{% endif %}
+{% if initial_game_name %}
+document.getElementById('game-name').value = {{ initial_game_name|tojson }};
+{% endif %}
 
 // Add keyboard shortcuts
 document.addEventListener('keydown', (e) => {

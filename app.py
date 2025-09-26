@@ -38,6 +38,12 @@ class Player(db.Model):
         }
 
 
+class Game(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    game_date = db.Column(db.DateTime, unique=True, nullable=False)
+    name = db.Column(db.String(200), nullable=True)
+
+
 class GameStat(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     player_id = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=False)
@@ -98,14 +104,49 @@ def index():
             'stats': stats
         })
 
-    return render_template('index.html', players=player_stats)
+    # Build Saved Games list (union of Game table and distinct GameStat dates)
+    games_map = {g.game_date: g for g in Game.query.all()}
+    # distinct dates from GameStat
+    distinct_dates = [row[0] for row in db.session.query(GameStat.game_date).distinct().all()]
+    all_dates = set(list(games_map.keys()) + distinct_dates)
+
+    games_list = []
+    for gdate in all_dates:
+        if not gdate:
+            continue
+        name = games_map.get(gdate).name if gdate in games_map else None
+        entries_count = GameStat.query.filter_by(game_date=gdate).count()
+        games_list.append({
+            'game_date': gdate,
+            'date_str': gdate.strftime('%Y-%m-%d %I:%M %p'),
+            'date_iso': gdate.strftime('%Y-%m-%dT%H:%M'),
+            'name': name or '',
+            'entries_count': entries_count
+        })
+
+    games_list.sort(key=lambda x: x['game_date'], reverse=True)
+
+    return render_template('index.html', players=player_stats, games=games_list)
 
 
 @app.route('/record_game')
 def record_game():
     """Page to record stats for a new game"""
     players = Player.query.order_by(Player.number).all()
-    return render_template('record_game.html', players=players)
+    initial_date = request.args.get('date', '')
+    initial_name = request.args.get('name', '')
+    # If only date provided, try to prefill name from Game table
+    if initial_date and not initial_name:
+        try:
+            parsed = datetime.fromisoformat(initial_date)
+            g = Game.query.filter_by(game_date=parsed).first()
+            if g and g.name:
+                initial_name = g.name
+        except Exception:
+            pass
+    return render_template('record_game.html', players=players,
+                           initial_game_date=initial_date,
+                           initial_game_name=initial_name)
 
 
 @app.route('/save_game_stats', methods=['POST'])
@@ -113,25 +154,57 @@ def save_game_stats():
     """Save stats for a game"""
     data = request.json
     game_date = datetime.fromisoformat(data['game_date'])
+    game_name = (data.get('game_name') or '').strip()
 
     try:
+        any_nonzero = False
         for player_stat in data['players']:
-            if any([player_stat['plus_minus'] != 0,
-                    player_stat['blocked_shots'] != 0,
-                    player_stat['takeaways'] != 0,
-                    player_stat['shots_taken'] != 0]):
+            pm = player_stat['plus_minus']
+            bs = player_stat['blocked_shots']
+            tk = player_stat['takeaways']
+            st = player_stat['shots_taken']
+
+            # Find existing stat row for this player and game_date
+            existing = GameStat.query.filter_by(player_id=player_stat['player_id'], game_date=game_date).first()
+
+            if pm == 0 and bs == 0 and tk == 0 and st == 0:
+                # If all zeros and a row exists, delete it (treat as cleared)
+                if existing:
+                    db.session.delete(existing)
+                continue
+
+            any_nonzero = True
+            if existing:
+                # Update existing row (upsert behavior)
+                existing.plus_minus = pm
+                existing.blocked_shots = bs
+                existing.takeaways = tk
+                existing.shots_taken = st
+            else:
+                # Insert new row
                 stat = GameStat(
                     player_id=player_stat['player_id'],
                     game_date=game_date,
-                    plus_minus=player_stat['plus_minus'],
-                    blocked_shots=player_stat['blocked_shots'],
-                    takeaways=player_stat['takeaways'],
-                    shots_taken=player_stat['shots_taken']
+                    plus_minus=pm,
+                    blocked_shots=bs,
+                    takeaways=tk,
+                    shots_taken=st
                 )
                 db.session.add(stat)
 
+        # Upsert Game record (store name if provided, or just ensure a game row exists when stats exist)
+        game = Game.query.filter_by(game_date=game_date).first()
+        if game:
+            if game_name:
+                game.name = game_name
+        else:
+            if game_name or any_nonzero:
+                game = Game(game_date=game_date, name=game_name or None)
+                db.session.add(game)
+
         db.session.commit()
-        return jsonify({'success': True, 'message': 'Game stats saved successfully!'})
+        message = 'Autosaved' if data.get('autosave') else 'Game stats saved successfully!'
+        return jsonify({'success': True, 'message': message})
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'message': str(e)}), 400
@@ -159,6 +232,32 @@ def delete_stat(stat_id):
     db.session.commit()
     return redirect(url_for('player_detail', player_id=player_id))
 
+
+@app.route('/delete_game', methods=['POST'])
+def delete_game():
+    """Delete an entire game (all stats for that date) and its Game record"""
+    date_str = request.form.get('date', '')
+    try:
+        game_date = datetime.fromisoformat(date_str)
+    except Exception:
+        return redirect(url_for('index'))
+
+    try:
+        # Delete all stats for this game date
+        stats = GameStat.query.filter_by(game_date=game_date).all()
+        for s in stats:
+            db.session.delete(s)
+
+        # Delete the Game record if it exists
+        game = Game.query.filter_by(game_date=game_date).first()
+        if game:
+            db.session.delete(game)
+
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     init_db()

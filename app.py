@@ -266,6 +266,14 @@ def delete_game():
 
     return redirect(url_for('index'))
 
-if __name__ == '__main__':
+# Initialize database on app startup
+def create_app():
+    """Factory function to create and configure app"""
     init_db()
+    return app
+
+# Ensure database is initialized when module is imported
+init_db()
+
+if __name__ == '__main__':
     app.run(debug=True)

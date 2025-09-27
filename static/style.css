@@ -13,6 +13,7 @@ body {
     line-height: 1.6;
 }
 
+
 .container {
     max-width: 1400px;
     margin: 0 auto;
@@ -404,266 +405,346 @@ header h1 {
     box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4) !important;
 }
 
-/* Mobile Styles */
+/* COMPLETELY REWRITTEN MOBILE DASHBOARD - MODERN CARD-BASED DESIGN */
 @media (max-width: 768px) {
+    /* Modern gradient background for mobile */
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        padding: 0;
+        margin: 0;
+    }
+    
     .container {
-        padding: 15px;
+        padding: 16px;
+        max-width: 100%;
+        min-height: 100vh;
     }
-
+    
+    /* Redesigned mobile header with glassmorphism */
     header {
-        padding: 20px;
-        margin-bottom: 20px;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 24px 20px;
+        margin-bottom: 24px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        position: sticky;
+        top: 16px;
+        z-index: 100;
     }
-
+    
     header h1 {
-        font-size: 1.8em;
-        margin-bottom: 15px;
+        font-size: 1.8rem;
+        background: linear-gradient(135deg, #2c3e50, #3498db);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 16px;
+        font-weight: 800;
+        text-align: center;
     }
-
+    
     .controls {
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
     }
-
-    .usage-hint {
-        font-size: 12px;
-    }
-
+    
     .btn {
-        width: 100%;
-        max-width: 250px;
-        font-size: 16px;
-        padding: 14px 20px;
+        flex: 1;
+        min-width: calc(50% - 6px);
+        padding: 16px 20px;
+        font-size: 15px;
+        font-weight: 700;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 16px rgba(52, 152, 219, 0.3);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-
-    /* Hide desktop header */
-    .desktop-only {
+    
+    .btn:hover, .btn:focus {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(52, 152, 219, 0.4);
+    }
+    
+    .usage-hint {
+        font-size: 13px;
+        color: #5a6c7d;
+        text-align: center;
+        margin-top: 12px;
+        font-weight: 500;
+    }
+    
+    /* Team Statistics Title */
+    h2 {
+        color: white !important;
+        font-size: 1.4rem !important;
+        font-weight: 700 !important;
+        text-align: center !important;
+        margin: 32px 0 20px 0 !important;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    /* Hide desktop table completely */
+    table thead {
         display: none;
     }
-
-    .mobile-only {
+    
+    table tbody {
         display: block;
     }
-
-    /* Mobile card layout */
-    .header-row, .player-row {
+    
+    table tr {
         display: block;
-        margin-bottom: 20px;
-    }
-
-    .player-row {
-        border: 2px solid rgba(255, 255, 255, 0.2);
-        border-radius: 15px;
         background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        margin-bottom: 16px;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
         overflow: hidden;
         transition: all 0.3s ease;
     }
-
-    .player-row:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    
+    table tr:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
     }
-
-    .cell {
-        padding: 15px 20px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    
+    table td {
         display: block;
+        padding: 0;
+        border: none;
         text-align: left;
     }
-
-    .cell:last-child {
-        border-bottom: none;
-    }
-
-    .player-name {
-        background: linear-gradient(135deg, #34495e, #2c3e50);
+    
+    /* Player header with gradient background */
+    table td:nth-child(1), table td:nth-child(2) {
+        background: linear-gradient(135deg, #2c3e50, #34495e);
         color: white;
-        margin: -2px -2px 0 -2px;
-        border-radius: 13px 13px 0 0;
-        padding: 18px 20px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
     }
-
-    .player-info {
-        align-items: flex-start;
+    
+    table td:nth-child(2) {
+        display: none; /* Hide separate name cell since we'll combine them */
     }
-
+    
     .player-number {
+        font-size: 1.5rem;
+        font-weight: 800;
         color: #3498db;
-        font-size: 18px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 8px 12px;
+        border-radius: 8px;
+        min-width: 60px;
+        text-align: center;
     }
-
-    .player-title {
+    
+    /* Create combined player info */
+    table td:nth-child(1)::after {
+        content: attr(data-player-name);
+        font-size: 1.2rem;
+        font-weight: 600;
         color: white;
-        font-size: 16px;
+        margin-left: 12px;
     }
-
-    .stat-group, .actions-group {
+    
+    /* Stats cells with better mobile layout */
+    table td:nth-child(3), table td:nth-child(4), table td:nth-child(5), table td:nth-child(6), table td:nth-child(7) {
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
-
-    .stat-label {
+    
+    table td:nth-child(7) {
+        border-bottom: none;
+    }
+    
+    /* Add labels before values */
+    table td:nth-child(3)::before { content: "Games Played"; }
+    table td:nth-child(4)::before { content: "Plus/Minus"; }
+    table td:nth-child(5)::before { content: "Shots Taken"; }
+    table td:nth-child(6)::before { content: "Blocked Shots"; }
+    table td:nth-child(7)::before { content: "Takeaways"; }
+    
+    table td::before {
+        font-weight: 600;
+        color: #5a6c7d;
         font-size: 14px;
-        margin-bottom: 0;
-        margin-right: 15px;
-        color: #34495e;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
-
-    .stat-controls {
-        gap: 15px;
-    }
-
-    .btn-small {
-        min-width: 50px;
-        padding: 12px 16px;
-        font-size: 18px;
-    }
-
-    .stat-value {
-        font-size: 22px;
-        min-width: 50px;
-        padding: 8px 16px;
-    }
-
-    .action-buttons {
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .btn-action {
-        flex: 1;
-        min-width: calc(50% - 4px);
-        padding: 12px 8px;
-        font-size: 13px;
+    
+    /* Style the stat values */
+    table td:nth-child(3), table td:nth-child(4), table td:nth-child(5), table td:nth-child(6), table td:nth-child(7) {
         font-weight: 700;
+        font-size: 1.1rem;
+        color: #2c3e50;
     }
-
-    .totals-section {
+    
+    /* Plus/minus colors */
+    .stat-positive {
+        color: #27ae60 !important;
+        background: rgba(39, 174, 96, 0.1);
+        padding: 4px 8px;
+        border-radius: 6px;
+    }
+    
+    .stat-negative {
+        color: #e74c3c !important;
+        background: rgba(231, 76, 60, 0.1);
+        padding: 4px 8px;
+        border-radius: 6px;
+    }
+    
+    .stat-neutral {
+        color: #7f8c8d !important;
+    }
+    
+    /* Actions button redesign */
+    table td:nth-child(8) {
         padding: 20px;
-        margin-bottom: 80px; /* Space for status indicator */
+        background: rgba(248, 249, 250, 0.8);
+        text-align: center;
     }
-
-    .totals-section h3 {
-        font-size: 1.3em;
-        margin-bottom: 15px;
+    
+    table td:nth-child(8) .btn {
+        width: 100%;
+        padding: 12px 20px;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        transition: all 0.3s ease;
     }
-
-    .totals-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
+    
+    table td:nth-child(8) .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
     }
-
-    .total-item {
-        padding: 16px 18px;
+    
+    /* Games section redesign */
+    #games-search {
+        background: rgba(255, 255, 255, 0.9) !important;
+        backdrop-filter: blur(20px) !important;
+        border: 2px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 12px !important;
+        padding: 16px 20px !important;
+        font-size: 16px !important;
+        color: #2c3e50 !important;
+        margin-bottom: 16px !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+        width: calc(100% - 40px) !important;
     }
-
-    .total-icon {
-        font-size: 24px;
-        margin-right: 12px;
+    
+    #games-search::placeholder {
+        color: #7f8c8d !important;
     }
-
-    .total-label {
+    
+    /* Games search container */
+    div[style*="display:flex"] {
+        flex-direction: column !important;
+        gap: 12px !important;
+        align-items: stretch !important;
+        margin-bottom: 20px !important;
+    }
+    
+    /* Games table redesign */
+    #games-table thead {
+        display: none;
+    }
+    
+    #games-table tbody {
+        display: block;
+    }
+    
+    #games-table tr {
+        display: block;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    #games-table tr:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+    
+    #games-table td {
+        display: block;
+        padding: 16px 20px;
+        border: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    #games-table td:last-child {
+        border-bottom: none;
+        background: rgba(248, 249, 250, 0.8);
+        text-align: center;
+        padding: 16px 20px;
+    }
+    
+    /* Game labels */
+    #games-table td:nth-child(1)::before { content: "Game: "; font-weight: 600; color: #5a6c7d; }
+    #games-table td:nth-child(2)::before { content: "Date: "; font-weight: 600; color: #5a6c7d; }
+    #games-table td:nth-child(3)::before { content: "Entries: "; font-weight: 600; color: #5a6c7d; }
+    
+    #games-table td:nth-child(1), #games-table td:nth-child(2), #games-table td:nth-child(3) {
+        font-weight: 500;
+        color: #2c3e50;
+    }
+    
+    /* Game action buttons */
+    #games-table .btn {
+        min-width: 80px;
+        padding: 10px 16px;
+        margin: 4px;
+        border-radius: 8px;
         font-size: 13px;
+        font-weight: 600;
     }
-
-    .total-value {
-        font-size: 20px;
+    
+    #games-table .btn-danger {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
     }
-
-    .status-indicator {
-        bottom: 15px;
-        right: 15px;
-        padding: 10px 15px;
-        font-size: 11px;
+    
+    /* Empty state styling */
+    #games-table td[colspan="4"] {
+        text-align: center !important;
+        color: rgba(255, 255, 255, 0.8) !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        backdrop-filter: blur(20px) !important;
+        padding: 40px 20px !important;
+        font-style: italic !important;
     }
-}
-
-/* Extra small mobile devices */
-@media (max-width: 480px) {
-    .container {
-        padding: 10px;
+    
+    /* Mobile utility classes */
+    .mobile-only {
+        display: block;
     }
-
-    header h1 {
-        font-size: 1.6em;
-    }
-
-    .cell {
-        padding: 12px 15px;
-    }
-
-    .stat-controls {
-        gap: 10px;
-    }
-
-    .btn-small {
-        min-width: 45px;
-        padding: 10px 12px;
-        font-size: 16px;
-    }
-
-    .stat-value {
-        font-size: 20px;
-        min-width: 45px;
-        padding: 6px 12px;
-    }
-
-    .btn-action {
-        font-size: 12px;
-        padding: 10px 6px;
-    }
-
-    .totals-section {
-        padding: 15px;
-    }
-
-    .total-item {
-        padding: 14px 16px;
-    }
-
-    .total-icon {
-        font-size: 20px;
-        margin-right: 10px;
-    }
-
-    .total-value {
-        font-size: 18px;
+    
+    .desktop-only {
+        display: none;
     }
 }
 
-/* Landscape mobile optimization */
-@media (max-width: 768px) and (orientation: landscape) {
-    .container {
-        padding: 10px;
-    }
-
-    header {
-        padding: 15px;
-        margin-bottom: 15px;
-    }
-
-    header h1 {
-        font-size: 1.5em;
-        margin-bottom: 10px;
-    }
-
-    .player-row {
-        margin-bottom: 15px;
-    }
-
-    .cell {
-        padding: 10px 15px;
-    }
-
-    .totals-section {
-        padding: 15px;
-        margin-bottom: 60px;
-    }
-}
 
 /* High DPI displays */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {

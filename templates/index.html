@@ -2,6 +2,10 @@
 
 {% block title %}Team Dashboard - Hockey Stats{% endblock %}
 
+{% block extra_style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" media="(max-width: 768px)">
+{% endblock %}
+
 {% block content %}
 <h2 style="color: #2d3748; margin-bottom: 20px;">Team Statistics Overview</h2>
 
@@ -21,7 +25,7 @@
     <tbody>
         {% for player in players %}
         <tr>
-            <td><span class="player-number">#{{ player.number }}</span></td>
+            <td data-player-name="{{ player.name }}"><span class="player-number">#{{ player.number }}</span></td>
             <td><strong>{{ player.name }}</strong></td>
             <td>{{ player.stats.games_played }}</td>
             <td class="{% if player.stats.plus_minus > 0 %}stat-positive{% elif player.stats.plus_minus < 0 %}stat-negative{% else %}stat-neutral{% endif %}">

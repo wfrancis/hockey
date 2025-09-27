@@ -14,6 +14,393 @@
   }
   .stat-toggles label { display: inline-flex; align-items: center; gap: 6px; }
   .stat-disabled { opacity: 0.5; pointer-events: none; }
+
+  /* Mobile responsive design */
+  @media (max-width: 768px) {
+    /* Hide desktop table */
+    .desktop-table {
+      display: none;
+    }
+    
+    /* Show mobile layout */
+    .mobile-layout {
+      display: block;
+    }
+    
+    /* Premium mobile player cards */
+    .mobile-player-card {
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+      border: none;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.08);
+      transition: all 0.2s ease;
+    }
+    
+    .mobile-player-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 25px rgba(102, 126, 234, 0.12);
+    }
+    
+    .mobile-player-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+    }
+    
+    .mobile-player-number {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 16px;
+      margin-right: 12px;
+      min-width: 48px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    }
+    
+    .mobile-player-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #2d3748;
+      letter-spacing: -0.5px;
+    }
+    
+    .mobile-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    
+    .mobile-stat {
+      text-align: center;
+      padding: 16px 12px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 12px;
+      border: 1px solid rgba(102, 126, 234, 0.1);
+      backdrop-filter: blur(10px);
+      transition: all 0.2s ease;
+    }
+    
+    .mobile-stat:hover {
+      background: rgba(255, 255, 255, 0.9);
+      border-color: rgba(102, 126, 234, 0.2);
+    }
+    
+    .mobile-stat-label {
+      font-size: 10px;
+      color: #667eea;
+      margin-bottom: 8px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .mobile-stat-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    
+    .mobile-btn {
+      width: 60px;
+      height: 60px;
+      border: none;
+      border-radius: 16px;
+      font-size: 24px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .mobile-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.2);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    
+    .mobile-btn:active::before {
+      opacity: 1;
+    }
+    
+    .mobile-btn.minus {
+      background: linear-gradient(135deg, #ff6b6b 0%, #e53e3e 100%);
+      color: white;
+    }
+    
+    .mobile-btn.minus:hover {
+      background: linear-gradient(135deg, #ff5252 0%, #d32f2f 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3);
+    }
+    
+    .mobile-btn.plus {
+      background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+      color: white;
+    }
+    
+    .mobile-btn.plus:hover {
+      background: linear-gradient(135deg, #40c057 0%, #2f9e44 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(55, 178, 77, 0.3);
+    }
+    
+    .mobile-btn:active {
+      transform: translateY(0px) scale(0.95);
+    }
+    
+    .mobile-stat-display {
+      min-width: 44px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 800;
+      padding: 8px 12px;
+      background: white;
+      border-radius: 12px;
+      border: 2px solid #f1f3f4;
+      color: #2d3748;
+      transition: all 0.2s ease;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .mobile-stat-display.positive {
+      color: #37b24d;
+      border-color: #c3fac8;
+      background: linear-gradient(135deg, #ffffff 0%, #f3f9f3 100%);
+    }
+    
+    .mobile-stat-display.negative {
+      color: #e53e3e;
+      border-color: #ffc9c9;
+      background: linear-gradient(135deg, #ffffff 0%, #fff5f5 100%);
+    }
+    
+    /* Mobile forms and typography */
+    h2 {
+      font-size: 1.4em !important;
+      margin-bottom: 20px !important;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 800;
+    }
+    
+    h3 {
+      font-size: 1.2em !important;
+      margin-bottom: 16px !important;
+      color: #4a5568;
+      font-weight: 700;
+    }
+    
+    /* Enhanced form controls */
+    input[type="datetime-local"], input[type="text"] {
+      padding: 14px 16px !important;
+      border: 2px solid #e2e8f0 !important;
+      border-radius: 12px !important;
+      font-size: 16px !important;
+      background: white !important;
+      transition: all 0.2s ease !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+    }
+    
+    input[type="datetime-local"]:focus, input[type="text"]:focus {
+      border-color: #667eea !important;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1), 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+      outline: none !important;
+    }
+    
+    /* Premium checkboxes */
+    .checkbox-container {
+      background: rgba(255, 255, 255, 0.8);
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(102, 126, 234, 0.1);
+      margin: 8px 0;
+      transition: all 0.2s ease;
+    }
+    
+    .checkbox-container:hover {
+      background: rgba(255, 255, 255, 0.95);
+      border-color: rgba(102, 126, 234, 0.2);
+    }
+    
+    input[type="checkbox"] {
+      width: 20px !important;
+      height: 20px !important;
+      margin-right: 10px !important;
+      accent-color: #667eea !important;
+    }
+    
+    label {
+      font-weight: 600 !important;
+      color: #4a5568 !important;
+      font-size: 14px !important;
+    }
+    
+    /* Enhanced action buttons */
+    .btn {
+      padding: 14px 24px !important;
+      border-radius: 12px !important;
+      font-weight: 700 !important;
+      font-size: 16px !important;
+      border: none !important;
+      cursor: pointer !important;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.5px !important;
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, #718096 0%, #4a5568 100%) !important;
+      color: white !important;
+    }
+    
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%) !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 6px 16px rgba(74, 85, 104, 0.3) !important;
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%) !important;
+      color: white !important;
+    }
+    
+    .btn-success:hover {
+      background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 6px 16px rgba(72, 187, 120, 0.3) !important;
+    }
+    
+    .btn:active {
+      transform: translateY(0px) scale(0.98) !important;
+    }
+    
+    /* Mobile autosave indicator */
+    #autosaveStatus {
+      padding: 8px 16px !important;
+      border-radius: 8px !important;
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      margin: 12px 0 !important;
+      border: none !important;
+      backdrop-filter: blur(10px) !important;
+    }
+    
+    /* Enhanced summary styling */
+    #playersSummary {
+      background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%) !important;
+      border: 2px solid rgba(102, 126, 234, 0.1) !important;
+      border-radius: 16px !important;
+      padding: 20px !important;
+      margin: 24px 0 !important;
+      font-family: 'SF Mono', 'Monaco', 'Cascadia Code', monospace !important;
+      font-size: 13px !important;
+      line-height: 1.6 !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+    }
+    
+    /* Smooth page transitions */
+    .mobile-layout {
+      animation: fadeInUp 0.4s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Enhanced container padding */
+    .container {
+      padding: 0 16px !important;
+    }
+      margin: 16px 0 8px !important;
+    }
+    
+    .form-group input {
+      font-size: 16px; /* Prevent zoom on iOS */
+      padding: 12px;
+    }
+    
+    .stat-toggles {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 12px 0;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    
+    .stat-toggles label {
+      font-size: 12px;
+      padding: 8px;
+      background: white;
+      border-radius: 4px;
+      text-align: center;
+      border: 1px solid #e2e8f0;
+    }
+    
+    /* Mobile summary and controls */
+    #players-summary {
+      font-size: 12px !important;
+      line-height: 1.3 !important;
+      margin-top: 16px !important;
+      padding: 12px !important;
+      background: #f8f9fa !important;
+      border-radius: 6px !important;
+    }
+    
+    #autosave-status {
+      font-size: 11px !important;
+      margin-top: 8px !important;
+      text-align: center;
+    }
+    
+    .btn {
+      padding: 12px 20px !important;
+      font-size: 14px !important;
+      margin: 6px 4px !important;
+      width: auto !important;
+    }
+  }
+  
+  /* Desktop styles */
+  @media (min-width: 769px) {
+    .desktop-table {
+      display: table;
+    }
+    
+    .mobile-layout {
+      display: none;
+    }
+  }
 </style>
 {% endblock %}
 
@@ -40,7 +427,8 @@
         <label><input type="checkbox" id="na_takeaways"> N/A Takeaways</label>
     </div>
 
-    <table>
+    <!-- Desktop Table Layout -->
+    <table class="desktop-table">
         <thead>
             <tr>
                 <th>Player</th>
@@ -88,6 +476,58 @@
         </tbody>
     </table>
 
+    <!-- Mobile Layout -->
+    <div class="mobile-layout">
+        {% for player in players %}
+        <div class="mobile-player-card">
+            <div class="mobile-player-header">
+                <div class="mobile-player-number">#{{ player.number }}</div>
+                <div class="mobile-player-name">{{ player.name }}</div>
+                <input type="hidden" id="player_id_mobile_{{ loop.index0 }}" value="{{ player.id }}">
+            </div>
+            
+            <div class="mobile-stats">
+                <!-- Plus/Minus -->
+                <div class="mobile-stat">
+                    <div class="mobile-stat-label">+/-</div>
+                    <div class="mobile-stat-controls">
+                        <button type="button" class="mobile-btn minus" onclick="updateStat({{ loop.index0 }}, 'plus_minus', -1)">−</button>
+                        <div class="mobile-stat-display" id="plus_minus_mobile_{{ loop.index0 }}">0</div>
+                        <button type="button" class="mobile-btn plus" onclick="updateStat({{ loop.index0 }}, 'plus_minus', 1)">+</button>
+                    </div>
+                </div>
+                
+                <!-- Shots -->
+                <div class="mobile-stat">
+                    <div class="mobile-stat-label">Shots</div>
+                    <div class="mobile-stat-controls">
+                        <div class="mobile-stat-display" id="shots_taken_mobile_{{ loop.index0 }}">0</div>
+                        <button type="button" class="mobile-btn plus" onclick="updateStat({{ loop.index0 }}, 'shots_taken', 1)">+</button>
+                    </div>
+                </div>
+                
+                <!-- Blocks -->
+                <div class="mobile-stat">
+                    <div class="mobile-stat-label">Blocks</div>
+                    <div class="mobile-stat-controls">
+                        <div class="mobile-stat-display" id="blocked_shots_mobile_{{ loop.index0 }}">0</div>
+                        <button type="button" class="mobile-btn plus" onclick="updateStat({{ loop.index0 }}, 'blocked_shots', 1)">+</button>
+                    </div>
+                </div>
+                
+                <!-- Takeaways -->
+                <div class="mobile-stat">
+                    <div class="mobile-stat-label">Takeaways</div>
+                    <div class="mobile-stat-controls">
+                        <div class="mobile-stat-display" id="takeaways_mobile_{{ loop.index0 }}">0</div>
+                        <button type="button" class="mobile-btn plus" onclick="updateStat({{ loop.index0 }}, 'takeaways', 1)">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
     <div id="players-summary" style="margin-top: 16px; white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: 14px; color: #4a5568;"></div>
     <div id="autosave-status" style="margin-top: 8px; font-size: 12px; color: #718096;">Autosave ready</div>
 
@@ -112,9 +552,18 @@ let autosaveTimer = null;
 const AUTOSAVE_DELAY = 500; // ms
 const autosaveStatusEl = document.getElementById('autosave-status');
 function setAutosaveStatus(text, ok = true) {
-    if (!autosaveStatusEl) return;
-    autosaveStatusEl.textContent = text;
-    autosaveStatusEl.style.color = ok ? '#718096' : '#e53e3e';
+    // Update desktop autosave status
+    if (autosaveStatusEl) {
+        autosaveStatusEl.textContent = text;
+        autosaveStatusEl.style.color = ok ? '#718096' : '#e53e3e';
+    }
+    
+    // Update mobile autosave status
+    const mobileAutosave = document.getElementById('mobileAutosave');
+    if (mobileAutosave) {
+        mobileAutosave.textContent = text;
+        mobileAutosave.style.color = ok ? '#28a745' : '#dc3545';
+    }
 }
 
 function buildPayload(isAutosave = false) {
@@ -190,24 +639,47 @@ function updateStat(playerIndex, statType, increment) {
         playerStats[playerIndex][statType] = 0;
     }
 
-    // Update display
-    const display = document.getElementById(`${statType}_${playerIndex}`);
     const value = playerStats[playerIndex][statType];
 
-    // Update text
-    if (statType === 'plus_minus' && value > 0) {
-        display.textContent = `+${value}`;
-    } else {
-        display.textContent = value;
+    // Update desktop display
+    const display = document.getElementById(`${statType}_${playerIndex}`);
+    if (display) {
+        // Update text
+        if (statType === 'plus_minus' && value > 0) {
+            display.textContent = `+${value}`;
+        } else {
+            display.textContent = value;
+        }
+
+        // Update color for plus/minus
+        if (statType === 'plus_minus') {
+            display.classList.remove('positive', 'negative');
+            if (value > 0) {
+                display.classList.add('positive');
+            } else if (value < 0) {
+                display.classList.add('negative');
+            }
+        }
     }
 
-    // Update color for plus/minus
-    if (statType === 'plus_minus') {
-        display.classList.remove('positive', 'negative');
-        if (value > 0) {
-            display.classList.add('positive');
-        } else if (value < 0) {
-            display.classList.add('negative');
+    // Update mobile display
+    const mobileDisplay = document.getElementById(`${statType}_mobile_${playerIndex}`);
+    if (mobileDisplay) {
+        // Update text
+        if (statType === 'plus_minus' && value > 0) {
+            mobileDisplay.textContent = `+${value}`;
+        } else {
+            mobileDisplay.textContent = value;
+        }
+
+        // Update color for plus/minus
+        if (statType === 'plus_minus') {
+            mobileDisplay.classList.remove('positive', 'negative');
+            if (value > 0) {
+                mobileDisplay.classList.add('positive');
+            } else if (value < 0) {
+                mobileDisplay.classList.add('negative');
+            }
         }
     }
 
@@ -269,12 +741,35 @@ function resetAllStats() {
             shots_taken: 0
         };
 
-        // Update all displays
-        document.getElementById(`plus_minus_${i}`).textContent = '0';
-        document.getElementById(`plus_minus_${i}`).classList.remove('positive', 'negative');
-        document.getElementById(`blocked_shots_${i}`).textContent = '0';
-        document.getElementById(`takeaways_${i}`).textContent = '0';
-        document.getElementById(`shots_taken_${i}`).textContent = '0';
+        // Update desktop displays
+        const desktopElements = [
+            document.getElementById(`plus_minus_${i}`),
+            document.getElementById(`blocked_shots_${i}`),
+            document.getElementById(`takeaways_${i}`),
+            document.getElementById(`shots_taken_${i}`)
+        ];
+        
+        desktopElements.forEach(el => {
+            if (el) {
+                el.textContent = '0';
+                el.classList.remove('positive', 'negative');
+            }
+        });
+
+        // Update mobile displays
+        const mobileElements = [
+            document.getElementById(`plus_minus_mobile_${i}`),
+            document.getElementById(`blocked_shots_mobile_${i}`),
+            document.getElementById(`takeaways_mobile_${i}`),
+            document.getElementById(`shots_taken_mobile_${i}`)
+        ];
+        
+        mobileElements.forEach(el => {
+            if (el) {
+                el.textContent = '0';
+                el.classList.remove('positive', 'negative');
+            }
+        });
     }
 
     // Reset totals and summary as well
@@ -286,16 +781,31 @@ function resetAllStats() {
 // Enable/disable stat columns globally via N/A checkboxes
 function disableStatColumn(statType, isNA) {
     for (let i = 0; i < playerCount; i++) {
+        // Handle desktop layout
         const display = document.getElementById(`${statType}_${i}`);
-        if (!display) continue;
-        const group = display.parentElement; // .stat-input-group
-        const buttons = group.querySelectorAll('button.stat-btn');
-        if (isNA) {
-            group.classList.add('stat-disabled');
-        } else {
-            group.classList.remove('stat-disabled');
+        if (display) {
+            const group = display.parentElement; // .stat-input-group
+            const buttons = group.querySelectorAll('button.stat-btn');
+            if (isNA) {
+                group.classList.add('stat-disabled');
+            } else {
+                group.classList.remove('stat-disabled');
+            }
+            buttons.forEach(btn => btn.disabled = isNA);
         }
-        buttons.forEach(btn => btn.disabled = isNA);
+
+        // Handle mobile layout
+        const mobileDisplay = document.getElementById(`${statType}_mobile_${i}`);
+        if (mobileDisplay) {
+            const mobileControls = mobileDisplay.parentElement; // .stat-controls-mobile
+            const mobileButtons = mobileControls.querySelectorAll('button.stat-btn-mobile');
+            if (isNA) {
+                mobileControls.classList.add('stat-disabled');
+            } else {
+                mobileControls.classList.remove('stat-disabled');
+            }
+            mobileButtons.forEach(btn => btn.disabled = isNA);
+        }
     }
 }
 

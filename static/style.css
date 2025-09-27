@@ -407,70 +407,67 @@ header h1 {
 
 /* COMPLETELY REWRITTEN MOBILE DASHBOARD - MODERN CARD-BASED DESIGN */
 @media (max-width: 768px) {
-    /* Modern gradient background for mobile */
+    /* Simplified solid background for mobile for readability */
     body {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        background: #ffffff !important;
         padding: 0;
         margin: 0;
+        color: #111827 !important; /* slate-900 */
     }
-    
+
     .container {
         padding: 16px;
         max-width: 100%;
         min-height: 100vh;
     }
-    
-    /* Redesigned mobile header with glassmorphism */
+
+    /* Redesigned mobile header with solid background */
     header {
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(20px);
-        border-radius: 20px;
+        background: #ffffff;
         padding: 24px 20px;
         margin-bottom: 24px;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 1px solid #e5e7eb; /* gray-200 */
         position: sticky;
         top: 16px;
         z-index: 100;
     }
-    
+
     header h1 {
         font-size: 1.8rem;
-        background: linear-gradient(135deg, #2c3e50, #3498db);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        color: #1f2937; /* gray-800 */
         margin-bottom: 16px;
         font-weight: 800;
         text-align: center;
     }
-    
+
     .controls {
         display: flex;
         gap: 12px;
         flex-wrap: wrap;
         justify-content: center;
     }
-    
+
     .btn {
         flex: 1;
         min-width: calc(50% - 6px);
-        padding: 16px 20px;
+        padding: 14px 16px;
         font-size: 15px;
         font-weight: 700;
-        border-radius: 12px;
-        background: linear-gradient(135deg, #3498db, #2980b9);
-        color: white;
-        border: none;
-        box-shadow: 0 4px 16px rgba(52, 152, 219, 0.3);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 8px;
+        background: #2563eb; /* blue-600 */
+        color: #ffffff;
+        border: 1px solid transparent;
+        box-shadow: none;
+        transition: background-color 0.2s ease;
     }
-    
+
     .btn:hover, .btn:focus {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(52, 152, 219, 0.4);
+        background: #1d4ed8; /* blue-700 */
+        box-shadow: none;
+        transform: none;
     }
-    
+
     .usage-hint {
         font-size: 13px;
         color: #5a6c7d;
@@ -478,84 +475,82 @@ header h1 {
         margin-top: 12px;
         font-weight: 500;
     }
-    
+
     /* Team Statistics Title */
     h2 {
-        color: white !important;
-        font-size: 1.4rem !important;
+        color: #1f2937 !important; /* gray-800 */
+        font-size: 1.3rem !important;
         font-weight: 700 !important;
         text-align: center !important;
-        margin: 32px 0 20px 0 !important;
-        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+        margin: 16px 0 12px 0 !important;
+        text-shadow: none !important;
     }
-    
+
     /* Hide desktop table completely */
     table thead {
         display: none;
     }
-    
+
     table tbody {
         display: block;
     }
-    
+
     table tr {
         display: block;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
-        border-radius: 16px;
-        margin-bottom: 16px;
-        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: #ffffff;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        box-shadow: none;
+        border: 1px solid #e5e7eb; /* gray-200 */
         overflow: hidden;
-        transition: all 0.3s ease;
+        transition: none;
     }
-    
+
     table tr:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+        background: #f9fafb; /* gray-50 */
     }
-    
+
     table td {
         display: block;
         padding: 0;
         border: none;
         text-align: left;
     }
-    
-    /* Player header with gradient background */
+
+    /* Player header with solid background */
     table td:nth-child(1), table td:nth-child(2) {
-        background: linear-gradient(135deg, #2c3e50, #34495e);
-        color: white;
-        padding: 20px;
+        background: #f3f4f6; /* gray-100 */
+        color: #111827; /* gray-900 */
+        padding: 16px;
         display: flex;
         align-items: center;
         gap: 12px;
     }
-    
+
     table td:nth-child(2) {
         display: none; /* Hide separate name cell since we'll combine them */
     }
-    
+
     .player-number {
-        font-size: 1.5rem;
-        font-weight: 800;
-        color: #3498db;
-        background: rgba(255, 255, 255, 0.1);
-        padding: 8px 12px;
-        border-radius: 8px;
-        min-width: 60px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #111827;
+        background: #e5e7eb; /* gray-200 */
+        padding: 6px 10px;
+        border-radius: 6px;
+        min-width: 44px;
         text-align: center;
     }
-    
+
     /* Create combined player info */
     table td:nth-child(1)::after {
         content: attr(data-player-name);
         font-size: 1.2rem;
         font-weight: 600;
-        color: white;
+        color: #111827; /* gray-900 */
         margin-left: 12px;
     }
-    
+
     /* Stats cells with better mobile layout */
     table td:nth-child(3), table td:nth-child(4), table td:nth-child(5), table td:nth-child(6), table td:nth-child(7) {
         padding: 16px 20px;
@@ -564,95 +559,79 @@ header h1 {
         justify-content: space-between;
         align-items: center;
     }
-    
+
     table td:nth-child(7) {
         border-bottom: none;
     }
-    
+
     /* Add labels before values */
     table td:nth-child(3)::before { content: "Games Played"; }
     table td:nth-child(4)::before { content: "Plus/Minus"; }
     table td:nth-child(5)::before { content: "Shots Taken"; }
     table td:nth-child(6)::before { content: "Blocked Shots"; }
     table td:nth-child(7)::before { content: "Takeaways"; }
-    
+
     table td::before {
         font-weight: 600;
-        color: #5a6c7d;
+        color: #6b7280; /* gray-500 */
         font-size: 14px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
-    
+
     /* Style the stat values */
     table td:nth-child(3), table td:nth-child(4), table td:nth-child(5), table td:nth-child(6), table td:nth-child(7) {
         font-weight: 700;
-        font-size: 1.1rem;
-        color: #2c3e50;
+        font-size: 1.05rem;
+        color: #111827; /* gray-900 */
     }
-    
-    /* Plus/minus colors */
-    .stat-positive {
-        color: #27ae60 !important;
-        background: rgba(39, 174, 96, 0.1);
-        padding: 4px 8px;
-        border-radius: 6px;
-    }
-    
-    .stat-negative {
-        color: #e74c3c !important;
-        background: rgba(231, 76, 60, 0.1);
-        padding: 4px 8px;
-        border-radius: 6px;
-    }
-    
-    .stat-neutral {
-        color: #7f8c8d !important;
-    }
-    
+
+    /* Plus/minus colors (high contrast, no background chips) */
+    .stat-positive { color: #166534 !important; /* green-800 */ }
+    .stat-negative { color: #b91c1c !important; /* red-700 */ }
+    .stat-neutral  { color: #374151 !important; /* gray-700 */ }
+
     /* Actions button redesign */
     table td:nth-child(8) {
-        padding: 20px;
-        background: rgba(248, 249, 250, 0.8);
+        padding: 16px;
+        background: #f9fafb; /* gray-50 */
         text-align: center;
     }
-    
+
     table td:nth-child(8) .btn {
         width: 100%;
-        padding: 12px 20px;
+        padding: 12px 16px;
         font-size: 14px;
         font-weight: 600;
-        border-radius: 10px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
+        border-radius: 8px;
+        background: #2563eb; /* blue-600 */
+        color: #ffffff;
         text-decoration: none;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        transition: all 0.3s ease;
+        box-shadow: none;
+        transition: background-color 0.2s ease;
     }
-    
+
     table td:nth-child(8) .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        background: #1d4ed8; /* blue-700 */
     }
-    
+
     /* Games section redesign */
     #games-search {
-        background: rgba(255, 255, 255, 0.9) !important;
-        backdrop-filter: blur(20px) !important;
-        border: 2px solid rgba(255, 255, 255, 0.3) !important;
-        border-radius: 12px !important;
-        padding: 16px 20px !important;
+        background: #ffffff !important;
+        border: 1px solid #e5e7eb !important; /* gray-200 */
+        border-radius: 8px !important;
+        padding: 12px 14px !important;
         font-size: 16px !important;
-        color: #2c3e50 !important;
-        margin-bottom: 16px !important;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
-        width: calc(100% - 40px) !important;
+        color: #111827 !important;
+        margin-bottom: 12px !important;
+        box-shadow: none !important;
+        width: 100% !important;
     }
-    
+
     #games-search::placeholder {
-        color: #7f8c8d !important;
+        color: #6b7280 !important; /* gray-500 */
     }
-    
+
     /* Games search container */
     div[style*="display:flex"] {
         flex-direction: column !important;
@@ -660,57 +639,55 @@ header h1 {
         align-items: stretch !important;
         margin-bottom: 20px !important;
     }
-    
+
     /* Games table redesign */
     #games-table thead {
         display: none;
     }
-    
+
     #games-table tbody {
         display: block;
     }
-    
+
     #games-table tr {
         display: block;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
-        border-radius: 16px;
+        background: #ffffff;
+        border-radius: 8px;
         margin-bottom: 12px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: none;
+        border: 1px solid #e5e7eb; /* gray-200 */
         overflow: hidden;
-        transition: all 0.3s ease;
+        transition: none;
     }
-    
+
     #games-table tr:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        background: #f9fafb; /* gray-50 */
     }
-    
+
     #games-table td {
         display: block;
         padding: 16px 20px;
         border: none;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        border-bottom: 1px solid #e5e7eb; /* gray-200 */
     }
-    
+
     #games-table td:last-child {
         border-bottom: none;
-        background: rgba(248, 249, 250, 0.8);
+        background: #f9fafb; /* gray-50 */
         text-align: center;
         padding: 16px 20px;
     }
-    
+
     /* Game labels */
     #games-table td:nth-child(1)::before { content: "Game: "; font-weight: 600; color: #5a6c7d; }
     #games-table td:nth-child(2)::before { content: "Date: "; font-weight: 600; color: #5a6c7d; }
     #games-table td:nth-child(3)::before { content: "Entries: "; font-weight: 600; color: #5a6c7d; }
-    
+
     #games-table td:nth-child(1), #games-table td:nth-child(2), #games-table td:nth-child(3) {
         font-weight: 500;
         color: #2c3e50;
     }
-    
+
     /* Game action buttons */
     #games-table .btn {
         min-width: 80px;
@@ -719,27 +696,31 @@ header h1 {
         border-radius: 8px;
         font-size: 13px;
         font-weight: 600;
+        background: #2563eb; /* blue-600 */
+        color: #ffffff;
+        border: 1px solid transparent;
+        box-shadow: none;
     }
-    
+
     #games-table .btn-danger {
-        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        background: #dc2626; /* red-600 */
     }
-    
+
     /* Empty state styling */
     #games-table td[colspan="4"] {
         text-align: center !important;
-        color: rgba(255, 255, 255, 0.8) !important;
-        background: rgba(255, 255, 255, 0.1) !important;
-        backdrop-filter: blur(20px) !important;
-        padding: 40px 20px !important;
+        color: #6b7280 !important; /* gray-500 */
+        background: transparent !important;
+        backdrop-filter: none !important;
+        padding: 20px !important;
         font-style: italic !important;
     }
-    
+
     /* Mobile utility classes */
     .mobile-only {
         display: block;
     }
-    
+
     .desktop-only {
         display: none;
     }

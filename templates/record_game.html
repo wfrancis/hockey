@@ -73,7 +73,7 @@
     
     .mobile-stats {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 16px;
     }
     
@@ -85,6 +85,54 @@
       border: 1px solid rgba(102, 126, 234, 0.1);
       backdrop-filter: blur(10px);
       transition: all 0.2s ease;
+      touch-action: pan-y; /* allow vertical scroll while capturing horizontal swipes */
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    /* Full-bleed stat tile (edge-to-edge inside card) */
+    .mobile-stat.full-bleed {
+      margin-left: -20px;  /* matches .mobile-player-card padding */
+      margin-right: -20px; /* matches .mobile-player-card padding */
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+      padding: 0;
+      overflow: hidden;
+      border: none;
+      box-shadow: none;
+    }
+    .mobile-stat.full-bleed .mobile-stat-controls {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      padding: 0;
+    }
+    .mobile-stat.full-bleed .mobile-btn {
+      width: 100%;
+      height: 64px;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .mobile-stat.full-bleed .mobile-stat-display {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      min-width: 72px;
+      height: 44px;
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      margin: 0;
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid #eceff3;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+      pointer-events: none;
     }
     
     .mobile-stat:hover {
@@ -191,6 +239,16 @@
       color: #e53e3e;
       border-color: #ffc9c9;
       background: linear-gradient(135deg, #ffffff 0%, #fff5f5 100%);
+    }
+    
+    /* Micro-interactions for value change */
+    @keyframes bump {
+      0% { transform: scale(1); }
+      35% { transform: scale(1.12); }
+      100% { transform: scale(1); }
+    }
+    .mobile-stat-display.bump {
+      animation: bump 180ms ease;
     }
     
     /* Mobile forms and typography */
@@ -340,8 +398,6 @@
     .container {
       padding: 0 16px !important;
     }
-      margin: 16px 0 8px !important;
-    }
     
     .form-group input {
       font-size: 16px; /* Prevent zoom on iOS */
@@ -421,10 +477,10 @@
 
     <h3 style="color: #4a5568; margin: 30px 0 20px;">Player Statistics</h3>
     <div class="stat-toggles" aria-label="Enable/disable stats for this game">
-        <label><input type="checkbox" id="na_plus_minus"> N/A +/-</label>
-        <label><input type="checkbox" id="na_shots_taken"> N/A Shots</label>
-        <label><input type="checkbox" id="na_blocked_shots"> N/A Blocks</label>
-        <label><input type="checkbox" id="na_takeaways"> N/A Takeaways</label>
+        <label><input type="checkbox" id="na_plus_minus" checked> N/A +/-</label>
+        <label><input type="checkbox" id="na_shots_taken" checked> N/A Shots</label>
+        <label><input type="checkbox" id="na_blocked_shots" checked> N/A Blocks</label>
+        <label><input type="checkbox" id="na_takeaways" checked> N/A Takeaways</label>
     </div>
 
     <!-- Desktop Table Layout -->
@@ -488,39 +544,42 @@
             
             <div class="mobile-stats">
                 <!-- Plus/Minus -->
-                <div class="mobile-stat">
-                    <div class="mobile-stat-label">+/-</div>
+                <div class="mobile-stat-label">+/-</div>
+                <div class="mobile-stat full-bleed" data-player-index="{{ loop.index0 }}" data-stat="plus_minus">
                     <div class="mobile-stat-controls">
-                        <button type="button" class="mobile-btn minus" onclick="updateStat({{ loop.index0 }}, 'plus_minus', -1)">−</button>
+                        <button type="button" class="mobile-btn minus" aria-label="Decrease +/-" onclick="updateStat({{ loop.index0 }}, 'plus_minus', -1)">−</button>
                         <div class="mobile-stat-display" id="plus_minus_mobile_{{ loop.index0 }}">0</div>
-                        <button type="button" class="mobile-btn plus" onclick="updateStat({{ loop.index0 }}, 'plus_minus', 1)">+</button>
+                        <button type="button" class="mobile-btn plus" aria-label="Increase +/-" onclick="updateStat({{ loop.index0 }}, 'plus_minus', 1)">+</button>
                     </div>
                 </div>
                 
                 <!-- Shots -->
-                <div class="mobile-stat">
-                    <div class="mobile-stat-label">Shots</div>
+                <div class="mobile-stat-label">Shots</div>
+                <div class="mobile-stat full-bleed" data-player-index="{{ loop.index0 }}" data-stat="shots_taken" data-plus-only="true">
                     <div class="mobile-stat-controls">
+                        <button type="button" class="mobile-btn minus" aria-label="Remove Shot" onclick="updateStat({{ loop.index0 }}, 'shots_taken', -1)">−</button>
                         <div class="mobile-stat-display" id="shots_taken_mobile_{{ loop.index0 }}">0</div>
-                        <button type="button" class="mobile-btn plus" onclick="updateStat({{ loop.index0 }}, 'shots_taken', 1)">+</button>
+                        <button type="button" class="mobile-btn plus" aria-label="Add Shot" onclick="updateStat({{ loop.index0 }}, 'shots_taken', 1)">+</button>
                     </div>
                 </div>
                 
                 <!-- Blocks -->
-                <div class="mobile-stat">
-                    <div class="mobile-stat-label">Blocks</div>
+                <div class="mobile-stat-label">Blocks</div>
+                <div class="mobile-stat full-bleed" data-player-index="{{ loop.index0 }}" data-stat="blocked_shots" data-plus-only="true">
                     <div class="mobile-stat-controls">
+                        <button type="button" class="mobile-btn minus" aria-label="Remove Block" onclick="updateStat({{ loop.index0 }}, 'blocked_shots', -1)">−</button>
                         <div class="mobile-stat-display" id="blocked_shots_mobile_{{ loop.index0 }}">0</div>
-                        <button type="button" class="mobile-btn plus" onclick="updateStat({{ loop.index0 }}, 'blocked_shots', 1)">+</button>
+                        <button type="button" class="mobile-btn plus" aria-label="Add Block" onclick="updateStat({{ loop.index0 }}, 'blocked_shots', 1)">+</button>
                     </div>
                 </div>
                 
                 <!-- Takeaways -->
-                <div class="mobile-stat">
-                    <div class="mobile-stat-label">Takeaways</div>
+                <div class="mobile-stat-label">Takeaways</div>
+                <div class="mobile-stat full-bleed" data-player-index="{{ loop.index0 }}" data-stat="takeaways" data-plus-only="true">
                     <div class="mobile-stat-controls">
+                        <button type="button" class="mobile-btn minus" aria-label="Remove Takeaway" onclick="updateStat({{ loop.index0 }}, 'takeaways', -1)">−</button>
                         <div class="mobile-stat-display" id="takeaways_mobile_{{ loop.index0 }}">0</div>
-                        <button type="button" class="mobile-btn plus" onclick="updateStat({{ loop.index0 }}, 'takeaways', 1)">+</button>
+                        <button type="button" class="mobile-btn plus" aria-label="Add Takeaway" onclick="updateStat({{ loop.index0 }}, 'takeaways', 1)">+</button>
                     </div>
                 </div>
             </div>
@@ -569,11 +628,12 @@ function setAutosaveStatus(text, ok = true) {
 function buildPayload(isAutosave = false) {
     const gameDate = document.getElementById('game-date').value;
     const gameName = (document.getElementById('game-name').value || '').trim();
+    // Inverted logic: checked = enabled; unchecked = N/A (disabled)
     const na = {
-        plus_minus: document.getElementById('na_plus_minus')?.checked || false,
-        shots_taken: document.getElementById('na_shots_taken')?.checked || false,
-        blocked_shots: document.getElementById('na_blocked_shots')?.checked || false,
-        takeaways: document.getElementById('na_takeaways')?.checked || false,
+        plus_minus: !(document.getElementById('na_plus_minus')?.checked ?? true),
+        shots_taken: !(document.getElementById('na_shots_taken')?.checked ?? true),
+        blocked_shots: !(document.getElementById('na_blocked_shots')?.checked ?? true),
+        takeaways: !(document.getElementById('na_takeaways')?.checked ?? true),
     };
 
     const players = [];
@@ -797,12 +857,15 @@ function disableStatColumn(statType, isNA) {
         // Handle mobile layout
         const mobileDisplay = document.getElementById(`${statType}_mobile_${i}`);
         if (mobileDisplay) {
-            const mobileControls = mobileDisplay.parentElement; // .stat-controls-mobile
-            const mobileButtons = mobileControls.querySelectorAll('button.stat-btn-mobile');
+            const mobileControls = mobileDisplay.parentElement; // .mobile-stat-controls
+            const mobileCard = mobileControls.closest('.mobile-stat');
+            const mobileButtons = mobileControls.querySelectorAll('button.mobile-btn');
             if (isNA) {
                 mobileControls.classList.add('stat-disabled');
+                if (mobileCard) mobileCard.classList.add('stat-disabled');
             } else {
                 mobileControls.classList.remove('stat-disabled');
+                if (mobileCard) mobileCard.classList.remove('stat-disabled');
             }
             mobileButtons.forEach(btn => btn.disabled = isNA);
         }
@@ -812,7 +875,8 @@ function disableStatColumn(statType, isNA) {
 ['plus_minus','shots_taken','blocked_shots','takeaways'].forEach(stat => {
     const cb = document.getElementById(`na_${stat}`);
     if (cb) cb.addEventListener('change', (e) => { 
-        disableStatColumn(stat, e.target.checked); 
+        // unchecked => disabled (N/A)
+        disableStatColumn(stat, !e.target.checked); 
         autosaveSchedule();
     });
 });
@@ -826,12 +890,12 @@ document.getElementById('game-stats-form').addEventListener('submit', async (e) 
 
     const gameDate = document.getElementById('game-date').value;
 
-    // Respect N/A toggles by zeroing those stats for all players on submit
+    // Inverted logic: unchecked => N/A (disabled), zero these stats on submit
     const na = {
-        plus_minus: document.getElementById('na_plus_minus')?.checked || false,
-        shots_taken: document.getElementById('na_shots_taken')?.checked || false,
-        blocked_shots: document.getElementById('na_blocked_shots')?.checked || false,
-        takeaways: document.getElementById('na_takeaways')?.checked || false,
+        plus_minus: !(document.getElementById('na_plus_minus')?.checked ?? true),
+        shots_taken: !(document.getElementById('na_shots_taken')?.checked ?? true),
+        blocked_shots: !(document.getElementById('na_blocked_shots')?.checked ?? true),
+        takeaways: !(document.getElementById('na_takeaways')?.checked ?? true),
     };
 
     const players = [];

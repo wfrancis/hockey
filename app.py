@@ -7,9 +7,16 @@ app = Flask(__name__)
 
 # Database configuration
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(basedir, "hockey_stats.db")}'
+
+# Use persistent storage path in production, local path in development
+if os.getenv('FLASK_ENV') == 'production':
+    db_path = '/app/data/hockey_stats.db'
+else:
+    db_path = os.path.join(basedir, "hockey_stats.db")
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'your-secret-key-here'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-here')
 
 db = SQLAlchemy(app)
 

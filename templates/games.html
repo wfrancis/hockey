@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Games - Hockey Stats{% endblock %}
+
+{% block extra_style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" media="(max-width: 768px)">
+{% endblock %}
+
+{% block content %}
+<h2 style="color: #2d3748; margin-bottom: 16px;">Saved Games</h2>
+
+<div style="display:flex; gap:10px; align-items:center; margin-bottom:12px;">
+  <input id="games-search" type="text" placeholder="Search games by name or date..." style="flex:1; padding:10px; border:2px solid #e2e8f0; border-radius:8px; font-size:14px;">
+  <a href="{{ url_for('record_game') }}" class="btn" style="padding: 10px 16px; font-size: 14px;">New Game</a>
+</div>
+
+<form id="bulk-delete-form" method="POST" action="{{ url_for('delete_games_bulk') }}">
+  <table id="games-table">
+    <thead>
+      <tr>
+        <th style="width:44px; text-align:center;"><input type="checkbox" id="select-all" aria-label="Select all games"></th>
+        <th style="text-align:left;">Game Name</th>
+        <th style="text-align:left;">Date</th>
+        <th>Entries</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% if games and games|length > 0 %}
+      {% for g in games %}
+      <tr>
+        <td style="text-align:center;"><input type="checkbox" class="game-checkbox" name="dates" value="{{ g.date_iso }}" aria-label="Select game {{ g.name if g.name else '(unnamed game)' }} on {{ g.date_str }}"></td>
+        <td style="text-align:left;">{{ g.name if g.name else '(unnamed game)' }}</td>
+        <td style="text-align:left;">{{ g.date_str }}</td>
+        <td style="text-align:center;">{{ g.entries_count }}</td>
+        <td style="text-align:center; white-space: nowrap;">
+          <a class="btn" style="padding: 6px 12px; font-size: 12px;" href="{{ url_for('record_game', date=g.date_iso, name=g.name) }}">Open</a>
+        </td>
+      </tr>
+      {% endfor %}
+    {% else %}
+      <tr><td colspan="5" style="text-align:center; color:#718096;">No games saved yet.</td></tr>
+    {% endif %}
+    </tbody>
+  </table>
+
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-top:12px; gap:10px;">
+    <label style="display:inline-flex; align-items:center; gap:8px; color:#4a5568;">
+      <input type="checkbox" id="select-all-bottom"> Select All
+    </label>
+    <button id="delete-selected" type="submit" class="btn btn-danger" style="padding: 8px 14px; font-size: 14px;" disabled>Delete Selected</button>
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Search filter
+  const gamesSearch = document.getElementById('games-search');
+  const gamesTable = document.getElementById('games-table');
+  if (gamesSearch && gamesTable) {
+    gamesSearch.addEventListener('input', () => {
+      const term = gamesSearch.value.toLowerCase();
+      for (const row of gamesTable.tBodies[0].rows) {
+        const name = row.cells[1]?.textContent.toLowerCase() || '';
+        const date = row.cells[2]?.textContent.toLowerCase() || '';
+        row.style.display = (name.includes(term) || date.includes(term)) ? '' : 'none';
+      }
+    });
+  }
+
+  // Select all / enable delete
+  const selectAllTop = document.getElementById('select-all');
+  const selectAllBottom = document.getElementById('select-all-bottom');
+  const deleteBtn = document.getElementById('delete-selected');
+
+  function getCheckboxes() {
+    return Array.from(document.querySelectorAll('.game-checkbox'));
+  }
+
+  function updateDeleteEnabled() {
+    const anyChecked = getCheckboxes().some(cb => cb.checked);
+    deleteBtn.disabled = !anyChecked;
+  }
+
+  function setAll(checked) {
+    getCheckboxes().forEach(cb => { cb.checked = checked; });
+    selectAllTop.checked = checked;
+    selectAllBottom.checked = checked;
+    updateDeleteEnabled();
+  }
+
+  if (selectAllTop) {
+    selectAllTop.addEventListener('change', (e) => setAll(e.target.checked));
+  }
+  if (selectAllBottom) {
+    selectAllBottom.addEventListener('change', (e) => setAll(e.target.checked));
+  }
+
+  getCheckboxes().forEach(cb => cb.addEventListener('change', () => {
+    const boxes = getCheckboxes();
+    const allChecked = boxes.length > 0 && boxes.every(x => x.checked);
+    selectAllTop.checked = allChecked;
+    selectAllBottom.checked = allChecked;
+    updateDeleteEnabled();
+  }));
+
+  // Confirm bulk delete
+  const form = document.getElementById('bulk-delete-form');
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      if (deleteBtn.disabled) {
+        e.preventDefault();
+        return;
+      }
+      if (!confirm('Delete selected games and all their stats?')) {
+        e.preventDefault();
+      }
+    });
+  }
+</script>
+{% endblock %}

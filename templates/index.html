@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-<h2 style="color: #2d3748; margin-bottom: 20px;">Team Statistics Overview</h2>
+<h2 style="color: #2d3748; margin-bottom: 12px;">Team Statistics Overview</h2>
 
 <table>
     <thead>
@@ -33,58 +33,4 @@
         {% endfor %}
     </tbody>
 </table>
-
-<h2 style="color: #2d3748; margin: 40px 0 12px;">Saved Games</h2>
-<div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
-  <input id="games-search" type="text" placeholder="Search games by name or date..." style="flex:1; padding:10px; border:2px solid #e2e8f0; border-radius:8px; font-size:14px;">
-  <a href="{{ url_for('record_game') }}" class="btn" style="padding: 10px 16px; font-size: 14px;">New Game</a>
-  <a href="{{ url_for('record_game') }}?date={{ (now or []).strftime('%Y-%m-%dT%H:%M') if now else '' }}" class="btn" style="padding: 10px 16px; font-size: 14px; display:none;">Quick Continue</a>
-  <!-- Quick Continue hidden placeholder; could be wired up to last game -->
-</div>
-
-<table id="games-table">
-  <thead>
-    <tr>
-      <th style="text-align:left;">Game Name</th>
-      <th style="text-align:left;">Date</th>
-      <th>Entries</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% if games and games|length > 0 %}
-    {% for g in games %}
-    <tr>
-      <td style="text-align:left;">{{ g.name if g.name else '(unnamed game)' }}</td>
-      <td style="text-align:left;">{{ g.date_str }}</td>
-      <td style="text-align:center;">{{ g.entries_count }}</td>
-      <td style="text-align:center; white-space: nowrap;">
-        <a class="btn" style="padding: 6px 12px; font-size: 12px;" href="{{ url_for('record_game', date=g.date_iso, name=g.name) }}">Open</a>
-        <form method="POST" action="{{ url_for('delete_game') }}" style="display: inline;" onsubmit="return confirm('Delete this game and all stats?');">
-          <input type="hidden" name="date" value="{{ g.date_iso }}">
-          <button type="submit" class="btn btn-danger" style="padding: 6px 12px; font-size: 12px; margin-left: 6px;">Delete</button>
-        </form>
-      </td>
-    </tr>
-    {% endfor %}
-  {% else %}
-    <tr><td colspan="4" style="text-align:center; color:#718096;">No games saved yet.</td></tr>
-  {% endif %}
-  </tbody>
- </table>
-
- <script>
-  const gamesSearch = document.getElementById('games-search');
-  const gamesTable = document.getElementById('games-table');
-  if (gamesSearch && gamesTable) {
-    gamesSearch.addEventListener('input', () => {
-      const term = gamesSearch.value.toLowerCase();
-      for (const row of gamesTable.tBodies[0].rows) {
-        const name = row.cells[0].textContent.toLowerCase();
-        const date = row.cells[1].textContent.toLowerCase();
-        row.style.display = (name.includes(term) || date.includes(term)) ? '' : 'none';
-      }
-    });
-  }
- </script>
 {% endblock %}

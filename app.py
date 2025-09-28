@@ -61,6 +61,31 @@ class GameStat(db.Model):
     shots_taken = db.Column(db.Integer, default=0)
 
 
+def build_games_list():
+    """Build list of saved games from Game table and distinct GameStat dates."""
+    games_map = {g.game_date: g for g in Game.query.all()}
+    # distinct dates from GameStat
+    distinct_dates = [row[0] for row in db.session.query(GameStat.game_date).distinct().all()]
+    all_dates = set(list(games_map.keys()) + distinct_dates)
+
+    games_list = []
+    for gdate in all_dates:
+        if not gdate:
+            continue
+        name = games_map.get(gdate).name if gdate in games_map else None
+        entries_count = GameStat.query.filter_by(game_date=gdate).count()
+        games_list.append({
+            'game_date': gdate,
+            'date_str': gdate.strftime('%Y-%m-%d %I:%M %p'),
+            'date_iso': gdate.strftime('%Y-%m-%dT%H:%M'),
+            'name': name or '',
+            'entries_count': entries_count
+        })
+
+    games_list.sort(key=lambda x: x['game_date'], reverse=True)
+    return games_list
+
+
 # Initialize database and add players
 def init_db():
     with app.app_context():
@@ -111,29 +136,7 @@ def index():
             'stats': stats
         })
 
-    # Build Saved Games list (union of Game table and distinct GameStat dates)
-    games_map = {g.game_date: g for g in Game.query.all()}
-    # distinct dates from GameStat
-    distinct_dates = [row[0] for row in db.session.query(GameStat.game_date).distinct().all()]
-    all_dates = set(list(games_map.keys()) + distinct_dates)
-
-    games_list = []
-    for gdate in all_dates:
-        if not gdate:
-            continue
-        name = games_map.get(gdate).name if gdate in games_map else None
-        entries_count = GameStat.query.filter_by(game_date=gdate).count()
-        games_list.append({
-            'game_date': gdate,
-            'date_str': gdate.strftime('%Y-%m-%d %I:%M %p'),
-            'date_iso': gdate.strftime('%Y-%m-%dT%H:%M'),
-            'name': name or '',
-            'entries_count': entries_count
-        })
-
-    games_list.sort(key=lambda x: x['game_date'], reverse=True)
-
-    return render_template('index.html', players=player_stats, games=games_list)
+    return render_template('index.html', players=player_stats)
 
 
 @app.route('/record_game')
@@ -266,6 +269,41 @@ def delete_game():
         db.session.rollback()
 
     return redirect(url_for('index'))
+
+
+@app.route('/games')
+def games():
+    """List all recorded games with bulk actions"""
+    games_list = build_games_list()
+    return render_template('games.html', games=games_list)
+
+
+@app.route('/delete_games_bulk', methods=['POST'])
+def delete_games_bulk():
+    """Bulk delete selected games given their ISO date strings."""
+    date_strs = request.form.getlist('dates')
+    try:
+        for date_str in date_strs:
+            try:
+                game_date = datetime.fromisoformat(date_str)
+            except Exception:
+                continue
+
+            # Delete all stats for this game date
+            stats = GameStat.query.filter_by(game_date=game_date).all()
+            for s in stats:
+                db.session.delete(s)
+
+            # Delete the Game record if it exists
+            game = Game.query.filter_by(game_date=game_date).first()
+            if game:
+                db.session.delete(game)
+
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+
+    return redirect(url_for('games'))
 
 # Initialize database on app startup
 def create_app():

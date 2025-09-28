@@ -479,10 +479,10 @@ header h1 {
     /* Team Statistics Title */
     h2 {
         color: #1f2937 !important; /* gray-800 */
-        font-size: 1.3rem !important;
-        font-weight: 700 !important;
+        font-size: 1.2rem !important;
+        font-weight: 800 !important;
         text-align: center !important;
-        margin: 16px 0 12px 0 !important;
+        margin: 8px 0 10px 0 !important;
         text-shadow: none !important;
     }
 
@@ -498,8 +498,8 @@ header h1 {
     table tr {
         display: block;
         background: #ffffff;
-        border-radius: 8px;
-        margin-bottom: 12px;
+        border-radius: 10px;
+        margin-bottom: 10px;
         box-shadow: none;
         border: 1px solid #e5e7eb; /* gray-200 */
         overflow: hidden;
@@ -521,7 +521,7 @@ header h1 {
     table td:nth-child(1), table td:nth-child(2) {
         background: #f3f4f6; /* gray-100 */
         color: #111827; /* gray-900 */
-        padding: 16px;
+        padding: 14px 16px;
         display: flex;
         align-items: center;
         gap: 12px;
@@ -532,13 +532,13 @@ header h1 {
     }
 
     .player-number {
-        font-size: 1.2rem;
+        font-size: 1rem;
         font-weight: 700;
         color: #111827;
-        background: #e5e7eb; /* gray-200 */
-        padding: 6px 10px;
+        background: #eef2f7; /* lighter gray */
+        padding: 4px 8px;
         border-radius: 6px;
-        min-width: 44px;
+        min-width: 38px;
         text-align: center;
     }
 
@@ -553,7 +553,7 @@ header h1 {
 
     /* Stats cell (only Plus/Minus now) */
     table td:nth-child(3) {
-        padding: 16px 20px;
+        padding: 12px 16px;
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         display: flex;
         justify-content: space-between;
@@ -566,9 +566,9 @@ header h1 {
     table td::before {
         font-weight: 600;
         color: #6b7280; /* gray-500 */
-        font-size: 14px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        font-size: 12px;
+        text-transform: none;
+        letter-spacing: 0;
     }
 
     /* Style the stat value */
@@ -585,26 +585,29 @@ header h1 {
 
     /* Actions button redesign (now 4th column) */
     table td:nth-child(4) {
-        padding: 16px;
-        background: #f9fafb; /* gray-50 */
-        text-align: center;
+        padding: 10px 16px;
+        background: transparent;
+        text-align: right;
     }
 
     table td:nth-child(4) .btn {
-        width: 100%;
-        padding: 12px 16px;
-        font-size: 14px;
-        font-weight: 600;
+        width: auto;
+        min-width: 0;
+        padding: 8px 10px;
+        font-size: 13px;
+        font-weight: 700;
         border-radius: 8px;
-        background: #2563eb; /* blue-600 */
-        color: #ffffff;
+        background: #ffffff; /* white */
+        color: #2563eb; /* blue-600 */
+        border: 1px solid #e5e7eb; /* gray-200 */
         text-decoration: none;
         box-shadow: none;
-        transition: background-color 0.2s ease;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
     }
 
     table td:nth-child(4) .btn:hover {
-        background: #1d4ed8; /* blue-700 */
+        background: #eff6ff; /* blue-50 */
+        border-color: #93c5fd; /* blue-300 */
     }
 
     /* Games section redesign */
@@ -670,12 +673,13 @@ header h1 {
         padding: 16px 20px;
     }
 
-    /* Game labels */
-    #games-table td:nth-child(1)::before { content: "Game: "; font-weight: 600; color: #5a6c7d; }
-    #games-table td:nth-child(2)::before { content: "Date: "; font-weight: 600; color: #5a6c7d; }
-    #games-table td:nth-child(3)::before { content: "Entries: "; font-weight: 600; color: #5a6c7d; }
+    /* Game labels (account for checkbox in column 1) */
+    #games-table td:nth-child(1)::before { content: ""; }
+    #games-table td:nth-child(2)::before { content: "Game: "; font-weight: 600; color: #5a6c7d; }
+    #games-table td:nth-child(3)::before { content: "Date: "; font-weight: 600; color: #5a6c7d; }
+    #games-table td:nth-child(4)::before { content: "Entries: "; font-weight: 600; color: #5a6c7d; }
 
-    #games-table td:nth-child(1), #games-table td:nth-child(2), #games-table td:nth-child(3) {
+    #games-table td:nth-child(2), #games-table td:nth-child(3), #games-table td:nth-child(4) {
         font-weight: 500;
         color: #2c3e50;
     }

@@ -10,26 +10,10 @@
 
 <div class="stats-grid">
     <div class="stat-card">
-        <div class="stat-value">{{ total_stats.games_played }}</div>
-        <div class="stat-label">Games Played</div>
-    </div>
-    <div class="stat-card">
         <div class="stat-value {% if total_stats.plus_minus > 0 %}stat-positive{% elif total_stats.plus_minus < 0 %}stat-negative{% endif %}">
             {% if total_stats.plus_minus > 0 %}+{% endif %}{{ total_stats.plus_minus }}
         </div>
         <div class="stat-label">Plus/Minus (+/-)</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-value">{{ total_stats.shots_taken }}</div>
-        <div class="stat-label">Shots Taken</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-value">{{ total_stats.blocked_shots }}</div>
-        <div class="stat-label">Blocked Shots</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-value">{{ total_stats.takeaways }}</div>
-        <div class="stat-label">Takeaways</div>
     </div>
 </div>
 
@@ -41,9 +25,6 @@
         <tr>
             <th>Date</th>
             <th>Plus/Minus</th>
-            <th>Shots Taken</th>
-            <th>Blocked Shots</th>
-            <th>Takeaways</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -54,9 +35,6 @@
             <td class="{% if stat.plus_minus > 0 %}stat-positive{% elif stat.plus_minus < 0 %}stat-negative{% else %}stat-neutral{% endif %}">
                 {% if stat.plus_minus > 0 %}+{% endif %}{{ stat.plus_minus }}
             </td>
-            <td>{{ stat.shots_taken }}</td>
-            <td>{{ stat.blocked_shots }}</td>
-            <td>{{ stat.takeaways }}</td>
             <td>
                 <form method="POST" action="{{ url_for('delete_stat', stat_id=stat.id) }}" style="display: inline;"
                       onsubmit="return confirm('Are you sure you want to delete this game stat?');">

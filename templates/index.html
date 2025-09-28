@@ -14,11 +14,7 @@
         <tr>
             <th>Number</th>
             <th>Player</th>
-            <th>Games Played</th>
             <th>Plus/Minus (+/-)</th>
-            <th>Shots Taken</th>
-            <th>Blocked Shots</th>
-            <th>Takeaways</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -27,13 +23,9 @@
         <tr>
             <td data-player-name="{{ player.name }}"><span class="player-number">#{{ player.number }}</span></td>
             <td><strong>{{ player.name }}</strong></td>
-            <td>{{ player.stats.games_played }}</td>
             <td class="{% if player.stats.plus_minus > 0 %}stat-positive{% elif player.stats.plus_minus < 0 %}stat-negative{% else %}stat-neutral{% endif %}">
                 {% if player.stats.plus_minus > 0 %}+{% endif %}{{ player.stats.plus_minus }}
             </td>
-            <td class="stat-neutral">{{ player.stats.shots_taken }}</td>
-            <td class="stat-neutral">{{ player.stats.blocked_shots }}</td>
-            <td class="stat-neutral">{{ player.stats.takeaways }}</td>
             <td>
                 <a href="{{ url_for('player_detail', player_id=player.id) }}" class="btn" style="padding: 8px 16px; font-size: 14px;">View Details</a>
             </td>

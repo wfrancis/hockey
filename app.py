@@ -166,10 +166,11 @@ def save_game_stats():
     try:
         any_nonzero = False
         for player_stat in data['players']:
-            pm = player_stat['plus_minus']
-            bs = player_stat['blocked_shots']
-            tk = player_stat['takeaways']
-            st = player_stat['shots_taken']
+            # Accept payloads that may omit fields other than plus_minus
+            pm = int(player_stat.get('plus_minus', 0) or 0)
+            bs = int(player_stat.get('blocked_shots', 0) or 0)
+            tk = int(player_stat.get('takeaways', 0) or 0)
+            st = int(player_stat.get('shots_taken', 0) or 0)
 
             # Find existing stat row for this player and game_date
             existing = GameStat.query.filter_by(player_id=player_stat['player_id'], game_date=game_date).first()

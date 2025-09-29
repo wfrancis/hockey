@@ -102,8 +102,6 @@ def init_db():
             (14, 'Leo'),
             (16, 'Shea'),
             (20, 'Pierre'),
-            (29, 'Matthew'),
-            (35, 'Carter'),
             (37, 'Slade'),
             (38, 'Andrew'),
             (39, 'Ryland'),

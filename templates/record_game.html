@@ -641,11 +641,46 @@ async function autosaveNow() {
     }
 }
 
-// Initialize stats for each player (only +/-)
+// Initialize stats for each player - use existing stats if available
+const existingStatsData = {{ existing_stats|tojson }};
 for (let i = 0; i < playerCount; i++) {
+    const playerId = parseInt(document.getElementById(`player_id_${i}`).value);
+    const existingPlayerStats = existingStatsData[playerId] || {};
+    
     playerStats[i] = {
-        plus_minus: 0
+        plus_minus: existingPlayerStats.plus_minus || 0
     };
+    
+    // Update display elements with existing values
+    const value = playerStats[i].plus_minus;
+    
+    // Update desktop display
+    const desktopDisplay = document.getElementById(`plus_minus_${i}`);
+    if (desktopDisplay) {
+        if (value > 0) {
+            desktopDisplay.textContent = `+${value}`;
+            desktopDisplay.classList.add('positive');
+        } else if (value < 0) {
+            desktopDisplay.textContent = value;
+            desktopDisplay.classList.add('negative');
+        } else {
+            desktopDisplay.textContent = '0';
+        }
+    }
+    
+    // Update mobile display
+    const mobileDisplay = document.getElementById(`plus_minus_mobile_${i}`);
+    if (mobileDisplay) {
+        if (value > 0) {
+            mobileDisplay.textContent = `+${value}`;
+            mobileDisplay.classList.add('positive');
+        } else if (value < 0) {
+            mobileDisplay.textContent = value;
+            mobileDisplay.classList.add('negative');
+        } else {
+            mobileDisplay.textContent = '0';
+        }
+    }
 }
 
 // Initialize totals and summary on load

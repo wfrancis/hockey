@@ -145,18 +145,34 @@ def record_game():
     players = Player.query.order_by(Player.number).all()
     initial_date = request.args.get('date', '')
     initial_name = request.args.get('name', '')
-    # If only date provided, try to prefill name from Game table
-    if initial_date and not initial_name:
+    existing_stats = {}
+    
+    # If date provided, fetch existing stats and game info
+    if initial_date:
         try:
             parsed = datetime.fromisoformat(initial_date)
-            g = Game.query.filter_by(game_date=parsed).first()
-            if g and g.name:
-                initial_name = g.name
+            # Get game name if not provided
+            if not initial_name:
+                g = Game.query.filter_by(game_date=parsed).first()
+                if g and g.name:
+                    initial_name = g.name
+            
+            # Fetch existing stats for this game date
+            stats = GameStat.query.filter_by(game_date=parsed).all()
+            for stat in stats:
+                existing_stats[stat.player_id] = {
+                    'plus_minus': stat.plus_minus,
+                    'blocked_shots': stat.blocked_shots,
+                    'takeaways': stat.takeaways,
+                    'shots_taken': stat.shots_taken
+                }
         except Exception:
             pass
+    
     return render_template('record_game.html', players=players,
                            initial_game_date=initial_date,
-                           initial_game_name=initial_name)
+                           initial_game_name=initial_name,
+                           existing_stats=existing_stats)
 
 
 @app.route('/save_game_stats', methods=['POST'])

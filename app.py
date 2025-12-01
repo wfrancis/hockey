@@ -93,20 +93,20 @@ def init_db():
 
         # Player roster
         players_data = [
-            (4, 'Ryder'),
-            (5, 'Sebastian'),
-            (6, 'Hudson'),
-            (11, 'Juna'),
-            (12, 'Bowen'),
-            (13, 'Cole'),
-            (14, 'Leo'),
+            (5, 'Sebastien'),
+            (7, 'Bowen'),
+            (8, 'Ryder'),
+            (9, 'Leo'),
+            (10, 'Ryland'),
+            (11, 'Juniper'),
+            (15, 'Cole'),
             (16, 'Shea'),
-            (20, 'Pierre'),
-            (37, 'Slade'),
-            (38, 'Andrew'),
-            (39, 'Ryland'),
-            (41, 'Asher'),
-            (44, 'Brooks')
+            (17, 'Andrew'),
+            (21, 'Slade'),
+            (25, 'Hudson'),
+            (43, 'Asher'),
+            (91, 'Pierre'),
+            (96, 'Brooks')
         ]
 
         # Only add players if they don't exist

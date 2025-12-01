@@ -15,6 +15,7 @@
             <th>Number</th>
             <th>Player</th>
             <th>Plus/Minus (+/-)</th>
+            <th>Shot Diff</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -25,6 +26,9 @@
             <td><strong>{{ player.name }}</strong></td>
             <td class="{% if player.stats.plus_minus > 0 %}stat-positive{% elif player.stats.plus_minus < 0 %}stat-negative{% else %}stat-neutral{% endif %}">
                 {% if player.stats.plus_minus > 0 %}+{% endif %}{{ player.stats.plus_minus }}
+            </td>
+            <td class="{% if player.stats.shot_differential > 0 %}stat-positive{% elif player.stats.shot_differential < 0 %}stat-negative{% else %}stat-neutral{% endif %}">
+                {% if player.stats.shot_differential > 0 %}+{% endif %}{{ player.stats.shot_differential }}
             </td>
             <td>
                 <a href="{{ url_for('player_detail', player_id=player.id) }}" class="btn" style="padding: 8px 16px; font-size: 14px;">View Details</a>

@@ -505,6 +505,7 @@
             <tr>
                 <th>Player</th>
                 <th style="text-align: center;">Plus/Minus (+/-)</th>
+                <th style="text-align: center;">Shot Diff</th>
             </tr>
         </thead>
         <tbody>
@@ -520,6 +521,13 @@
                         <button type="button" class="stat-btn stat-btn-minus" onclick="updateStat({{ loop.index0 }}, 'plus_minus', -1)">−</button>
                         <div class="stat-display" id="plus_minus_{{ loop.index0 }}">0</div>
                         <button type="button" class="stat-btn stat-btn-plus" onclick="updateStat({{ loop.index0 }}, 'plus_minus', 1)">+</button>
+                    </div>
+                </td>
+                <td>
+                    <div class="stat-input-group">
+                        <button type="button" class="stat-btn stat-btn-minus" onclick="updateStat({{ loop.index0 }}, 'shot_differential', -1)">−</button>
+                        <div class="stat-display" id="shot_differential_{{ loop.index0 }}">0</div>
+                        <button type="button" class="stat-btn stat-btn-plus" onclick="updateStat({{ loop.index0 }}, 'shot_differential', 1)">+</button>
                     </div>
                 </td>
             </tr>
@@ -545,6 +553,16 @@
                         <button type="button" class="mobile-btn minus" aria-label="Decrease +/-" onclick="updateStat({{ loop.index0 }}, 'plus_minus', -1)">−</button>
                         <div class="mobile-stat-display" id="plus_minus_mobile_{{ loop.index0 }}">0</div>
                         <button type="button" class="mobile-btn plus" aria-label="Increase +/-" onclick="updateStat({{ loop.index0 }}, 'plus_minus', 1)">+</button>
+                    </div>
+                </div>
+                
+                <!-- Shot Differential -->
+                <div class="mobile-stat-label">Shot Diff</div>
+                <div class="mobile-stat full-bleed" data-player-index="{{ loop.index0 }}" data-stat="shot_differential">
+                    <div class="mobile-stat-controls">
+                        <button type="button" class="mobile-btn minus" aria-label="Decrease Shot Diff" onclick="updateStat({{ loop.index0 }}, 'shot_differential', -1)">−</button>
+                        <div class="mobile-stat-display" id="shot_differential_mobile_{{ loop.index0 }}">0</div>
+                        <button type="button" class="mobile-btn plus" aria-label="Increase Shot Diff" onclick="updateStat({{ loop.index0 }}, 'shot_differential', 1)">+</button>
                     </div>
                 </div>
             </div>
@@ -606,12 +624,18 @@ function buildPayload(isAutosave = false) {
 
     const players = [];
     for (let i = 0; i < playerCount; i++) {
-        players.push({
+        console.log(`Player ${i} stats:`, playerStats[i]);
+        const playerData = {
             player_id: parseInt(document.getElementById(`player_id_${i}`).value),
-            plus_minus: na.plus_minus ? 0 : playerStats[i].plus_minus
-        });
+            plus_minus: na.plus_minus ? 0 : playerStats[i].plus_minus,
+            shot_differential: playerStats[i].shot_differential || 0
+        };
+        console.log(`Player ${i} data to send:`, playerData);
+        players.push(playerData);
     }
-    return { game_date: gameDate, game_name: gameName, players, autosave: isAutosave };
+    const payload = { game_date: gameDate, game_name: gameName, players, autosave: isAutosave };
+    console.log('Full payload:', JSON.stringify(payload, null, 2));
+    return payload;
 }
 
 function autosaveSchedule() {
@@ -648,20 +672,21 @@ for (let i = 0; i < playerCount; i++) {
     const existingPlayerStats = existingStatsData[playerId] || {};
     
     playerStats[i] = {
-        plus_minus: existingPlayerStats.plus_minus || 0
+        plus_minus: existingPlayerStats.plus_minus || 0,
+        shot_differential: existingPlayerStats.shot_differential || 0
     };
     
-    // Update display elements with existing values
-    const value = playerStats[i].plus_minus;
+    // Update display elements with existing values - Plus/Minus
+    const pmValue = playerStats[i].plus_minus;
     
     // Update desktop display
     const desktopDisplay = document.getElementById(`plus_minus_${i}`);
     if (desktopDisplay) {
-        if (value > 0) {
-            desktopDisplay.textContent = `+${value}`;
+        if (pmValue > 0) {
+            desktopDisplay.textContent = `+${pmValue}`;
             desktopDisplay.classList.add('positive');
-        } else if (value < 0) {
-            desktopDisplay.textContent = value;
+        } else if (pmValue < 0) {
+            desktopDisplay.textContent = pmValue;
             desktopDisplay.classList.add('negative');
         } else {
             desktopDisplay.textContent = '0';
@@ -671,15 +696,30 @@ for (let i = 0; i < playerCount; i++) {
     // Update mobile display
     const mobileDisplay = document.getElementById(`plus_minus_mobile_${i}`);
     if (mobileDisplay) {
-        if (value > 0) {
-            mobileDisplay.textContent = `+${value}`;
+        if (pmValue > 0) {
+            mobileDisplay.textContent = `+${pmValue}`;
             mobileDisplay.classList.add('positive');
-        } else if (value < 0) {
-            mobileDisplay.textContent = value;
+        } else if (pmValue < 0) {
+            mobileDisplay.textContent = pmValue;
             mobileDisplay.classList.add('negative');
         } else {
             mobileDisplay.textContent = '0';
         }
+    }
+    
+    // Update shot differential displays
+    const sdValue = playerStats[i].shot_differential;
+    const sdDesktop = document.getElementById(`shot_differential_${i}`);
+    if (sdDesktop) {
+        sdDesktop.textContent = sdValue > 0 ? `+${sdValue}` : sdValue;
+        if (sdValue > 0) sdDesktop.classList.add('positive');
+        else if (sdValue < 0) sdDesktop.classList.add('negative');
+    }
+    const sdMobile = document.getElementById(`shot_differential_mobile_${i}`);
+    if (sdMobile) {
+        sdMobile.textContent = sdValue > 0 ? `+${sdValue}` : sdValue;
+        if (sdValue > 0) sdMobile.classList.add('positive');
+        else if (sdValue < 0) sdMobile.classList.add('negative');
     }
 }
 
@@ -690,26 +730,24 @@ renderPlayersSummary();
 function updateStat(playerIndex, statType, increment) {
     // Update the value
     playerStats[playerIndex][statType] += increment;
-
-    // Prevent negative values for shots, blocked shots, and takeaways
-    if (statType !== 'plus_minus' && playerStats[playerIndex][statType] < 0) {
-        playerStats[playerIndex][statType] = 0;
-    }
+    console.log(`Updated player ${playerIndex} ${statType}: ${playerStats[playerIndex][statType]}`);
 
     const value = playerStats[playerIndex][statType];
+    const showPlusSign = (statType === 'plus_minus' || statType === 'shot_differential');
+    const showColors = (statType === 'plus_minus' || statType === 'shot_differential');
 
     // Update desktop display
     const display = document.getElementById(`${statType}_${playerIndex}`);
     if (display) {
         // Update text
-        if (statType === 'plus_minus' && value > 0) {
+        if (showPlusSign && value > 0) {
             display.textContent = `+${value}`;
         } else {
             display.textContent = value;
         }
 
-        // Update color for plus/minus
-        if (statType === 'plus_minus') {
+        // Update color
+        if (showColors) {
             display.classList.remove('positive', 'negative');
             if (value > 0) {
                 display.classList.add('positive');
@@ -723,14 +761,14 @@ function updateStat(playerIndex, statType, increment) {
     const mobileDisplay = document.getElementById(`${statType}_mobile_${playerIndex}`);
     if (mobileDisplay) {
         // Update text
-        if (statType === 'plus_minus' && value > 0) {
+        if (showPlusSign && value > 0) {
             mobileDisplay.textContent = `+${value}`;
         } else {
             mobileDisplay.textContent = value;
         }
 
-        // Update color for plus/minus
-        if (statType === 'plus_minus') {
+        // Update color
+        if (showColors) {
             mobileDisplay.classList.remove('positive', 'negative');
             if (value > 0) {
                 mobileDisplay.classList.add('positive');
@@ -782,21 +820,32 @@ function resetAllStats() {
 
     for (let i = 0; i < playerCount; i++) {
         playerStats[i] = {
-            plus_minus: 0
+            plus_minus: 0,
+            shot_differential: 0
         };
 
-        // Update desktop display
+        // Update desktop displays
         const desktopPM = document.getElementById(`plus_minus_${i}`);
         if (desktopPM) {
             desktopPM.textContent = '0';
             desktopPM.classList.remove('positive', 'negative');
         }
+        const desktopSD = document.getElementById(`shot_differential_${i}`);
+        if (desktopSD) {
+            desktopSD.textContent = '0';
+            desktopSD.classList.remove('positive', 'negative');
+        }
 
-        // Update mobile display
+        // Update mobile displays
         const mobilePM = document.getElementById(`plus_minus_mobile_${i}`);
         if (mobilePM) {
             mobilePM.textContent = '0';
             mobilePM.classList.remove('positive', 'negative');
+        }
+        const mobileSD = document.getElementById(`shot_differential_mobile_${i}`);
+        if (mobileSD) {
+            mobileSD.textContent = '0';
+            mobileSD.classList.remove('positive', 'negative');
         }
     }
 
@@ -865,10 +914,13 @@ document.getElementById('game-stats-form').addEventListener('submit', async (e) 
 
     const players = [];
     for (let i = 0; i < playerCount; i++) {
-        players.push({
+        const playerData = {
             player_id: parseInt(document.getElementById(`player_id_${i}`).value),
-            plus_minus: na.plus_minus ? 0 : playerStats[i].plus_minus
-        });
+            plus_minus: na.plus_minus ? 0 : playerStats[i].plus_minus,
+            shot_differential: playerStats[i].shot_differential || 0
+        };
+        console.log(`Form submit - Player ${i} data:`, playerData);
+        players.push(playerData);
     }
 
     try {
@@ -885,6 +937,7 @@ document.getElementById('game-stats-form').addEventListener('submit', async (e) 
         });
 
         const result = await response.json();
+        console.log('Server response:', result);
         const alertContainer = document.getElementById('alert-container');
 
         if (result.success) {

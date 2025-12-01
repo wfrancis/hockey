@@ -15,6 +15,12 @@
         </div>
         <div class="stat-label">Plus/Minus (+/-)</div>
     </div>
+    <div class="stat-card">
+        <div class="stat-value {% if total_stats.shot_differential > 0 %}stat-positive{% elif total_stats.shot_differential < 0 %}stat-negative{% endif %}">
+            {% if total_stats.shot_differential > 0 %}+{% endif %}{{ total_stats.shot_differential }}
+        </div>
+        <div class="stat-label">Shot Differential</div>
+    </div>
 </div>
 
 <h3 style="color: #4a5568; margin: 30px 0 20px;">Game History</h3>
@@ -26,6 +32,7 @@
             <th>Date</th>
             <th>Game</th>
             <th>Plus/Minus</th>
+            <th>Shot Diff</th>
         </tr>
     </thead>
     <tbody>
@@ -35,6 +42,9 @@
             <td>{% if stat.game_name %}{{ stat.game_name|linkify|safe }}{% else %}<span style="color: #a0aec0;">—</span>{% endif %}</td>
             <td class="{% if stat.plus_minus > 0 %}stat-positive{% elif stat.plus_minus < 0 %}stat-negative{% else %}stat-neutral{% endif %}">
                 {% if stat.plus_minus > 0 %}+{% endif %}{{ stat.plus_minus }}
+            </td>
+            <td class="{% if stat.shot_differential > 0 %}stat-positive{% elif stat.shot_differential < 0 %}stat-negative{% else %}stat-neutral{% endif %}">
+                {% if stat.shot_differential > 0 %}+{% endif %}{{ stat.shot_differential }}
             </td>
         </tr>
         {% endfor %}

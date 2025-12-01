@@ -46,6 +46,7 @@ class Player(db.Model):
         total_blocked_shots = sum(stat.blocked_shots for stat in self.stats)
         total_takeaways = sum(stat.takeaways for stat in self.stats)
         total_shots_taken = sum(stat.shots_taken for stat in self.stats)
+        total_shot_differential = sum(stat.shot_differential for stat in self.stats)
         games_played = len(self.stats)
 
         return {
@@ -53,6 +54,7 @@ class Player(db.Model):
             'blocked_shots': total_blocked_shots,
             'takeaways': total_takeaways,
             'shots_taken': total_shots_taken,
+            'shot_differential': total_shot_differential,
             'games_played': games_played
         }
 
@@ -71,6 +73,7 @@ class GameStat(db.Model):
     blocked_shots = db.Column(db.Integer, default=0)
     takeaways = db.Column(db.Integer, default=0)
     shots_taken = db.Column(db.Integer, default=0)
+    shot_differential = db.Column(db.Integer, default=0)
 
 
 def build_games_list():
@@ -190,7 +193,8 @@ def record_game():
                     'plus_minus': stat.plus_minus,
                     'blocked_shots': stat.blocked_shots,
                     'takeaways': stat.takeaways,
-                    'shots_taken': stat.shots_taken
+                    'shots_taken': stat.shots_taken,
+                    'shot_differential': stat.shot_differential
                 }
         except Exception:
             pass
@@ -207,6 +211,8 @@ def save_game_stats():
     data = request.json
     game_date = datetime.fromisoformat(data['game_date'])
     game_name = (data.get('game_name') or '').strip()
+    
+    print(f"DEBUG: Received data: {data}")
 
     try:
         any_nonzero = False
@@ -216,11 +222,13 @@ def save_game_stats():
             bs = int(player_stat.get('blocked_shots', 0) or 0)
             tk = int(player_stat.get('takeaways', 0) or 0)
             st = int(player_stat.get('shots_taken', 0) or 0)
+            sd = int(player_stat.get('shot_differential', 0) or 0)
+            print(f"DEBUG: Player {player_stat.get('player_id')} - pm={pm}, sd={sd}")
 
             # Find existing stat row for this player and game_date
             existing = GameStat.query.filter_by(player_id=player_stat['player_id'], game_date=game_date).first()
 
-            if pm == 0 and bs == 0 and tk == 0 and st == 0:
+            if pm == 0 and bs == 0 and tk == 0 and st == 0 and sd == 0:
                 # If all zeros and a row exists, delete it (treat as cleared)
                 if existing:
                     db.session.delete(existing)
@@ -233,6 +241,7 @@ def save_game_stats():
                 existing.blocked_shots = bs
                 existing.takeaways = tk
                 existing.shots_taken = st
+                existing.shot_differential = sd
             else:
                 # Insert new row
                 stat = GameStat(
@@ -241,7 +250,8 @@ def save_game_stats():
                     plus_minus=pm,
                     blocked_shots=bs,
                     takeaways=tk,
-                    shots_taken=st
+                    shots_taken=st,
+                    shot_differential=sd
                 )
                 db.session.add(stat)
 
@@ -297,6 +307,7 @@ def player_detail(player_id):
                 'blocked_shots': 0,
                 'takeaways': 0,
                 'shots_taken': 0,
+                'shot_differential': 0,
                 'id': None  # No ID means it's a placeholder
             })()
             game_stats.append(placeholder)

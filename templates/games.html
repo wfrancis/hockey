@@ -30,7 +30,7 @@
       {% for g in games %}
       <tr>
         <td style="text-align:center;"><input type="checkbox" class="game-checkbox" name="dates" value="{{ g.date_iso }}" aria-label="Select game {{ g.name if g.name else '(unnamed game)' }} on {{ g.date_str }}"></td>
-        <td style="text-align:left;">{{ g.name if g.name else '(unnamed game)' }}</td>
+        <td style="text-align:left;">{% if g.name %}{{ g.name|linkify|safe }}{% else %}(unnamed game){% endif %}</td>
         <td style="text-align:left;">{{ g.date_str }}</td>
         <td style="text-align:center;">{{ g.entries_count }}</td>
         <td style="text-align:center; white-space: nowrap;">

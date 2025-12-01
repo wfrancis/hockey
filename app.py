@@ -2,8 +2,20 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
+import re
 
 app = Flask(__name__)
+
+# Custom Jinja filter to linkify URLs
+@app.template_filter('linkify')
+def linkify_filter(text):
+    """Convert URLs in text to clickable links"""
+    if not text:
+        return text
+    # Pattern to match URLs
+    url_pattern = r'(https?://[^\s]+)'
+    # Replace URLs with anchor tags
+    return re.sub(url_pattern, r'<a href="\1" target="_blank" style="color: #667eea; text-decoration: underline;">\1</a>', text)
 
 # Database configuration
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -255,7 +267,40 @@ def save_game_stats():
 def player_detail(player_id):
     """View detailed stats for a specific player"""
     player = Player.query.get_or_404(player_id)
-    game_stats = GameStat.query.filter_by(player_id=player_id).order_by(GameStat.game_date.desc()).all()
+    
+    # Get all distinct game dates
+    all_game_dates = [row[0] for row in db.session.query(GameStat.game_date).distinct().order_by(GameStat.game_date.desc()).all()]
+    
+    # Get game names indexed by date
+    games = Game.query.all()
+    game_names = {g.game_date: g.name for g in games}
+    
+    # Get player's stats indexed by game_date
+    player_stats = GameStat.query.filter_by(player_id=player_id).all()
+    stats_by_date = {stat.game_date: stat for stat in player_stats}
+    
+    # Build complete game history with 0 for missing games
+    game_stats = []
+    for game_date in all_game_dates:
+        game_name = game_names.get(game_date, '')
+        if game_date in stats_by_date:
+            stat = stats_by_date[game_date]
+            # Add game_name attribute to the stat object
+            stat.game_name = game_name
+            game_stats.append(stat)
+        else:
+            # Create a placeholder stat object for display (not saved to DB)
+            placeholder = type('obj', (object,), {
+                'game_date': game_date,
+                'game_name': game_name,
+                'plus_minus': 0,
+                'blocked_shots': 0,
+                'takeaways': 0,
+                'shots_taken': 0,
+                'id': None  # No ID means it's a placeholder
+            })()
+            game_stats.append(placeholder)
+    
     total_stats = player.get_total_stats()
 
     return render_template('player_detail.html',

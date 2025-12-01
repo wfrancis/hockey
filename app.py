@@ -124,6 +124,8 @@ def index():
     """Main dashboard showing all players and their total stats"""
     players = Player.query.order_by(Player.number).all()
     player_stats = []
+    
+    total_plus_minus = 0
 
     for player in players:
         stats = player.get_total_stats()
@@ -133,8 +135,22 @@ def index():
             'name': player.name,
             'stats': stats
         })
+        total_plus_minus += stats['plus_minus']
+    
+    # Sort players by plus_minus from highest to lowest
+    player_stats.sort(key=lambda x: x['stats']['plus_minus'], reverse=True)
+    
+    # Calculate summary statistics
+    total_games = db.session.query(GameStat.game_date).distinct().count()
+    total_players = len(players)
+    
+    summary = {
+        'total_players': total_players,
+        'total_games': total_games,
+        'team_plus_minus': total_plus_minus
+    }
 
-    return render_template('index.html', players=player_stats)
+    return render_template('index.html', players=player_stats, summary=summary)
 
 
 @app.route('/record_game')

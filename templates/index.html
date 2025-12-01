@@ -33,4 +33,7 @@
         {% endfor %}
     </tbody>
 </table>
+
+<div style="background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%); border: 2px solid rgba(102, 126, 234, 0.1); border-radius: 16px; padding: 20px; margin-top: 20px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: 13px; line-height: 1.6; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); white-space: pre-wrap; color: #4a5568;">{% for player in players %}#{{ player.number }} {{ player.name }}: +/- {% if player.stats.plus_minus > 0 %}+{% endif %}{{ player.stats.plus_minus }}
+{% endfor %}</div>
 {% endblock %}

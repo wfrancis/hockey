@@ -141,8 +141,13 @@ def index():
     player_stats = []
     
     total_plus_minus = 0
+    
+    # Players to hide from display
+    hidden_players = ['Leo', 'Hudson']
 
     for player in players:
+        if player.name in hidden_players:
+            continue
         stats = player.get_total_stats()
         player_stats.append({
             'id': player.id,
@@ -171,7 +176,8 @@ def index():
 @app.route('/record_game')
 def record_game():
     """Page to record stats for a new game"""
-    players = Player.query.order_by(Player.number).all()
+    hidden_players = ['Leo', 'Hudson']
+    players = [p for p in Player.query.order_by(Player.number).all() if p.name not in hidden_players]
     initial_date = request.args.get('date', '')
     initial_name = request.args.get('name', '')
     existing_stats = {}

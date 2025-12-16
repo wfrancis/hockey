@@ -505,7 +505,6 @@
             <tr>
                 <th>Player</th>
                 <th style="text-align: center;">Plus/Minus (+/-)</th>
-                <th style="text-align: center;">Shot Diff</th>
             </tr>
         </thead>
         <tbody>
@@ -521,13 +520,6 @@
                         <button type="button" class="stat-btn stat-btn-minus" onclick="updateStat({{ loop.index0 }}, 'plus_minus', -1)">−</button>
                         <div class="stat-display" id="plus_minus_{{ loop.index0 }}">0</div>
                         <button type="button" class="stat-btn stat-btn-plus" onclick="updateStat({{ loop.index0 }}, 'plus_minus', 1)">+</button>
-                    </div>
-                </td>
-                <td>
-                    <div class="stat-input-group">
-                        <button type="button" class="stat-btn stat-btn-minus" onclick="updateStat({{ loop.index0 }}, 'shot_differential', -1)">−</button>
-                        <div class="stat-display" id="shot_differential_{{ loop.index0 }}">0</div>
-                        <button type="button" class="stat-btn stat-btn-plus" onclick="updateStat({{ loop.index0 }}, 'shot_differential', 1)">+</button>
                     </div>
                 </td>
             </tr>
@@ -556,15 +548,6 @@
                     </div>
                 </div>
                 
-                <!-- Shot Differential -->
-                <div class="mobile-stat-label">Shot Diff</div>
-                <div class="mobile-stat full-bleed" data-player-index="{{ loop.index0 }}" data-stat="shot_differential">
-                    <div class="mobile-stat-controls">
-                        <button type="button" class="mobile-btn minus" aria-label="Decrease Shot Diff" onclick="updateStat({{ loop.index0 }}, 'shot_differential', -1)">−</button>
-                        <div class="mobile-stat-display" id="shot_differential_mobile_{{ loop.index0 }}">0</div>
-                        <button type="button" class="mobile-btn plus" aria-label="Increase Shot Diff" onclick="updateStat({{ loop.index0 }}, 'shot_differential', 1)">+</button>
-                    </div>
-                </div>
             </div>
         </div>
         {% endfor %}
